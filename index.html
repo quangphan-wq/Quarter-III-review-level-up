@@ -1,0 +1,2096 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Level-up Defense · Phan Mạnh Quang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+<script>
+/* =====================================================================
+   DATA: toàn bộ số liệu của deck. Lấy nguyên văn từ HUONG_DAN_DECK_Q3_REVIEW_L5.md.
+   Không tự tính lại, không làm tròn khác đi, không thêm số mới.
+   ===================================================================== */
+const DATA = {
+  q3: {
+    revenue: 701.3,            // triệu, Total Revenue Q3 (con số chính dùng toàn deck)
+    perfRevenue: 690.9,        // triệu, Revenue tính performance (chỉ dùng ở slide L5)
+    commit: 800,
+    achievePct: 87.7,          // 701.3/800
+    dealsWon: 15,
+    arpd: 46.8,                // 701.3/15
+    months: [                  // theo tháng ghi nhận performance
+      { m: 'T7', actual: 241.9, commit: 300 },
+      { m: 'T8', actual: 149.4, commit: 200 },
+      { m: 'T9', actual: 306.8, commit: 300 }
+    ],
+    mixRevenuePct: { 'Up/cross': 36.9, 'CSM': 23.5, 'Marketing': 22.9, 'Partner': 16.7 },
+    mixDealsPct:   { 'Up/cross': 40.0, 'CSM': 40.0, 'Marketing': 13.3, 'Partner': 6.7 },
+    existingShare: { revenuePct: 60.4, deals: 12, of: 15 },
+    newMeetings: 33, newMeetingTarget: 45,
+    rank: { juniorBC: '8/54', rchn: 9, company: 22 }
+  },
+  quarters: [                  // xu hướng doanh thu theo quý (triệu)
+    { q: 'Q4/25', v: 442 }, { q: 'Q1/26', v: 341 },
+    { q: 'Q2/26', v: 542 }, { q: 'Q3/26', v: 701 }
+  ],
+  months2026: [193.2, 0, 148.0, 9.8, 364.7, 167.3, 241.9, 149.4, 306.8], // T1–T9
+  avg9m: 176,
+  perfRatingL4: { T4:'Dưới tối thiểu', T5:'Outperformance', T6:'Goal', T7:'Outperformance', T8:'Goal', T9:'Outperformance' },
+  year: { goal: 2300, ytd: 1584, ytdPct: 68.9, neededQ4: 716, withQ4: 2584, withQ4Pct: 112 },
+  l4: { backup: 70, kpi: 100, goal: 145, outperf: 190 },
+  l5: { backup: 90, kpi: 125, goal: 175, outperf: 250 },
+  funnelNew: [                 // phễu new sales Q3 (không tính khách hiện hữu)
+    { s: 'Lead', n: 107 },     // tổng lead Q3 theo báo cáo nguồn
+    { s: 'New meeting', n: 33 },
+    { s: 'Deal new won', n: 3 } // Biogreen, Ba Vì (Marketing) + Máy tính Trần Hạnh (Partner)
+  ],
+  conversion: {                // %
+    leadToMeeting: 30.8,       // 33/107
+    meetingToWon: { H1: 8.8, Q3: 9.1 }, // 3/33
+    leadToWon: 2.8             // 3/107
+  },
+  q4: {
+    commit: 1000,
+    months: [
+      { m: 'T10', target: 250, items: [['LPH', 66], ['Deal nhỏ', 70], ['New sales', 114]] },
+      { m: 'T11', target: 300, items: [['DMS tái ký', 250], ['Upsell/New', 50]] },
+      { m: 'T12', target: 453, items: [['Diamond Plaza', 143], ['Pearl River', 310]] }
+    ],
+    floor: 529,                // nền + DMS, ≥ Goal L5 cả quý (525)
+    upside: ['Draho tái ký sớm 500 (thay DMS nếu DMS trượt)', 'LiteOn ~1.000', 'Truyền dẫn Long Biên (chưa xác định dealsize)']
+  },
+
+  /* ---- Số hiển thị theo từng slide: chép nguyên văn từ mục 5 của brief ---- */
+  slides: {
+    goalL5Quarter: 525,        // Goal L5 cả quý = 3 × 175M (S5, S12)
+    s4:  { monthPct: { T7: 81, T8: 75, T9: 102 } },
+    s6:  { existingLabelPct: 60, newLabelPct: 40, h1NewPct: 74 },
+    s7:  { meetingPct: 73 },
+    s8:  { newDeals: 'Biogreen, CP TM Ba Vì (Marketing) · Máy tính Trần Hạnh (Partner)' },
+    s9:  { deals: [
+      { name: 'Nebecom', value: 179, dec: 0, source: 'Up/cross', icon: 'layers', sub: '3 đợt upsell, lớn nhất 156,8M',
+        why: 'Mở rộng từ nhu cầu hiện hữu: sau triển khai, khách dùng rất active nên nhu cầu mới tự xuất hiện.' },
+      { name: 'Máy tính Trần Hạnh', value: 117.1, dec: 1, source: 'Partner', icon: 'zap', sub: '',
+        why: 'Chốt nhanh gọn: 6 ngày từ lúc tạo deal đến khi chốt.', quote: 'Always keep it hot.' },
+      { name: 'Biogreen (Hóa dược & CNSH)', value: 108.8, dec: 1, source: 'Marketing', icon: 'flask', sub: '',
+        why: 'Tối đa hóa giá trị deal: phần mềm ~54M và triển khai ~54M, bài toán quản lý quy trình sản xuất theo đơn.',
+        split: [['Phần mềm', 54], ['Triển khai', 54]] }
+    ]},
+    s11: { existingRev: 425, diamond: 143 },
+    s12: { perfPct: 132, lowest: { m: 'T8', v: 149 }, monthsAboveKpiL5: '7/9' },
+    s15: { q3MeetingsPerMonth: 11, targetMeetingsPerMonth: 15 },
+    s16: { recapBeforeH: 2, recapAfterMin: 30, recapCutPct: 75, meetingsPerMonth: 15, hoursSaved: 22, workDays: 3 },
+    s18: { perMonth: 333 },
+    s19: {
+      tiers: [
+        { key: 'base', name: 'Nền', rows: [
+          { id: 'lph',  deal: 'LPH (Lotte Properties Hanoi)', short: 'LPH', value: 66, when: 'T10', note: '30% của 221M, phần còn lại thu sau triển khai' },
+          { id: 'small', deal: 'Deal nhỏ (Viện A, XNNL, M7)', short: 'Deal nhỏ', value: 70, approx: true, when: 'T10', note: '' },
+          { id: 'dp',   deal: 'Diamond Plaza', short: 'Diamond Plaza', value: 143.4, when: 'Chốt T11, tiền về T12', note: 'OOM chỉ định thầu, đang thống nhất scope', hl: true },
+          { id: 'ns',   deal: 'New sales/upsell', short: 'New sales/ upsell', value: 164, approx: true, when: 'T10–T11', note: '' }
+        ]},
+        { key: 'renew', name: 'Tái ký', rows: [
+          { id: 'dms',  deal: 'DMS', short: 'DMS', value: 250, when: 'Hoàn tất thủ tục T11 · HĐ hết hạn T12', note: '+ PS 60M: chấm KPI theo NĐ 355 & phê duyệt kế hoạch công việc năm', hl: true }
+        ]},
+        { key: 'big', name: 'Cơ hội lớn', rows: [
+          { id: 'prh',  deal: 'Pearl River Hotel', short: 'Pearl River', value: 310, when: 'Chốt T12', note: 'Chủ đầu tư đã có chủ trương, PIC (anh Tuyển) tích cực', hl: true }
+        ]},
+        { key: 'upside', name: 'Dự phòng / Upside', rows: [
+          { id: 'draho', deal: 'Draho tái ký sớm', value: 500, when: '', note: 'HĐ hiện tại hết hạn T5/2027, thay DMS nếu DMS trượt' },
+          { id: 'liteon', deal: 'LiteOn', value: 1000, approx: true, when: '', note: 'Đang dựng showcase, đã nhận dữ liệu, khách cần giải ngân trong năm' },
+          { id: 'lb',   deal: 'Truyền dẫn Long Biên', value: null, valueText: 'Chưa xác định dealsize', when: '', note: 'Quan tâm bảo mật, đề xuất on-premise' }
+        ]}
+      ],
+      // Waterfall cộng dồn theo đúng thứ tự tầng trong bảng
+      waterfall: ['lph', 'small', 'dp', 'ns', 'dms', 'prh']
+    }
+  },
+
+  /* ---- Phụ lục ---- */
+  appendix: {
+    dealsQ3: [                 // A2 · 15 deal won Q3: tên · giá trị (triệu) · nguồn · ngày chốt
+      ['LynkID gia hạn', 72.0, 'CSM', '31/07'],
+      ['Biogreen', 108.84, 'Marketing', '18/08'],
+      ['Máy tính Trần Hạnh', 117.12, 'Partner', '28/07'],
+      ['Nebecom upsell', 15.0, 'Up/cross', '31/08'],
+      ['Nebecom upsell 5 TK', 7.16, 'Up/cross', '20/07'],
+      ['MC-Bifi upsell 10 TK', 5.6, 'CSM', '24/07'],
+      ['PS Xí nghiệp Năng lượng TN', 43.2, 'Up/cross', '02/08'],
+      ['CP TM Ba Vì', 51.41, 'Marketing', '18/09'],
+      ['Nebecom upsells', 156.84, 'Up/cross', '30/09'],
+      ['Dược Nam Hà', 34.72, 'CSM', '30/09'],
+      ['Bifi upsells', 22.4, 'CSM', '28/09'],
+      ['LynkID upsell', 27.06, 'CSM', '30/09'],
+      ['M7 upsell 20 TK', 14.4, 'Up/cross', '10/09'],
+      ['Draho upsell 10 TK HRM', 3.15, 'CSM', '27/08'],
+      ['Rino edu upsell', 22.37, 'Up/cross', '19/08']
+    ],
+    dealsQ3Total: 701.28
+  }
+};
+
+/* Quote slide kết (S21). Phương án thay thế:
+   "Same hunger. Higher bar."
+   "Level up is not the finish line. It's the new baseline."
+   "Earn it. Then own it."
+   "Pressure is a privilege." */
+const CLOSING_QUOTE = 'Raise the bar. Then clear it.';
+</script>
+
+<style id="deck-css">
+/* =====================================================================
+   Hệ thống thiết kế v2: "modern editorial"
+   Chữ Be Vietnam Pro + nhãn JetBrains Mono · nền trắng, kẻ mảnh, ít khung
+   Một màu nhấn cobalt, dải màu từ navy-ink tới xanh nhạt cho biểu đồ
+   ===================================================================== */
+:root{
+  --ink:#0B1220; --ink-2:#2A3345; --muted:#5E6878; --faint:#8A94A6; --line:#E4E7EC; --panel:#F4F6F9;
+  --a-900:#0A1840; --a-700:#1D3FD8; --a-600:#2B50F0; --a-500:#4F70FF; --a-300:#8FA6FF; --a-100:#E9EEFF;
+  --dark:#070B18; --good:#0E9F6E; --warn:#F2A900; --bad:#E5484D;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --sans:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#05080F;overflow:hidden;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+#viewport{position:fixed;inset:0;overflow:hidden}
+#deck{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(var(--s,1));background:#fff;overflow:hidden}
+
+/* ---------- Slide shell ---------- */
+.slide{position:absolute;inset:0;background:#fff;visibility:hidden;z-index:0;overflow:hidden}
+.slide.active{visibility:visible;z-index:2}
+.slide.leaving{visibility:visible;z-index:1}
+.slide .notes{display:none}
+.slide-in{position:absolute;left:96px;right:96px;top:72px;bottom:96px;display:flex;flex-direction:column}
+.hd{flex:none;position:relative}
+.eyebrow{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--a-600);display:flex;align-items:center;gap:16px}
+.eyebrow::after{content:'';flex:none;width:56px;height:1px;background:currentColor;opacity:.45}
+.title{margin-top:20px;font-size:54px;line-height:1.1;font-weight:600;letter-spacing:-.032em;color:var(--ink);max-width:1560px;text-wrap:balance}
+.body{flex:1;min-height:0;margin-top:48px}
+.foot{position:absolute;left:96px;right:96px;bottom:34px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.06em;color:var(--faint)}
+.foot .pg b{color:var(--ink);font-weight:500}
+
+/* ---------- Building blocks ---------- */
+.lab{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);line-height:1.4}
+.num{font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-.035em}
+.panel{background:var(--panel);border-radius:24px}
+.ch-h{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch-t{font-size:20px;font-weight:600;letter-spacing:-.01em;color:var(--ink);line-height:1.35}
+.ch-t span{display:block;font-size:16px;font-weight:400;color:var(--muted);letter-spacing:0;margin-top:2px}
+svg.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;font-size:16px;font-weight:600;padding:5px 12px 5px 10px;line-height:1.2;font-variant-numeric:tabular-nums}
+.pill.good{background:#E3F5EE;color:var(--good)}
+.pill.info{background:var(--a-100);color:var(--a-700)}
+.pill svg.i{width:16px;height:16px;stroke-width:2.4}
+.legend{display:flex;gap:22px;font-size:16px;color:var(--muted);align-items:center;white-space:nowrap}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:8px}
+svg text{font-family:var(--sans)}
+svg text.m{font-family:var(--mono)}
+
+/* ---------- Animation primitives (giữ nguyên engine) ---------- */
+.a{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease) var(--d,0ms),transform .6s var(--ease) var(--d,0ms)}
+.a.in{opacity:1;transform:none}
+.a.fade{transform:none}
+.a.pop{transform:scale(.8)}
+.a.drop{transform:translateY(-28px)}
+.a.gy{opacity:1;transform:scaleY(0);transform-origin:50% 100%;transition:transform .7s var(--ease) var(--d,0ms)}
+.a.gx{opacity:1;transform:scaleX(0);transform-origin:0 50%;transition:transform .7s var(--ease) var(--d,0ms)}
+.a.gy.in,.a.gx.in,.a.pop.in,.a.drop.in{transform:none}
+svg .a{transform-box:fill-box;transform-origin:center}
+svg .a.gy{transform-origin:50% 100%}
+svg .a.gx{transform-origin:0 50%}
+.a.draw{opacity:1;transform:none;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .9s var(--ease) var(--d,0ms)}
+.a.draw.in{stroke-dashoffset:0}
+.a.hl{background-image:linear-gradient(var(--a-100),var(--a-100));background-repeat:no-repeat;background-size:0% 100%;transition:opacity .5s var(--ease) var(--d,0ms),transform .5s var(--ease) var(--d,0ms),background-size .7s var(--ease) calc(var(--d,0ms) + 350ms)}
+.a.hl.in{background-size:100% 100%}
+.instant .a,.instant .a *{transition:none!important}
+.static .a{opacity:1!important;transform:none!important;transition:none!important}
+.static .a.draw{stroke-dashoffset:0!important}
+.static .a.hl{background-size:100% 100%!important}
+.static.slide{visibility:visible!important}
+@media (prefers-reduced-motion:reduce){
+  .a,.a.pop,.a.drop,.a.gy,.a.gx{transform:none!important;transition:opacity .2s linear!important}
+  .a.gy,.a.gx{opacity:0}
+  .a.gy.in,.a.gx.in{opacity:1}
+  .a.draw{stroke-dashoffset:0!important;opacity:0;transition:opacity .2s linear!important}
+  .a.draw.in{opacity:1}
+  .a.hl{background-size:100% 100%!important}
+}
+
+/* ---------- Chrome: progress, overview, toast ---------- */
+#progress{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--a-600);z-index:5;transition:width .5s var(--ease)}
+#overview{position:fixed;inset:0;z-index:20;background:rgba(5,8,15,.95);backdrop-filter:blur(6px);display:none;overflow:auto;padding:48px 56px 64px}
+#overview.open{display:block}
+#overview h3{color:#fff;font-size:20px;font-weight:600;margin-bottom:8px}
+#overview .ov-hint{color:#8A94A6;font-size:14px;margin-bottom:28px;font-family:var(--mono)}
+#overview .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:28px}
+.ov-item{cursor:pointer;border-radius:10px;outline:2px solid transparent;outline-offset:5px;transition:outline-color .2s}
+.ov-item:hover,.ov-item.sel{outline-color:var(--a-500)}
+.ov-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:8px;background:#fff}
+.ov-thumb>.slide{transform-origin:0 0;width:1920px;height:1080px;right:auto;bottom:auto}
+.ov-cap{display:flex;gap:10px;margin-top:10px;color:#C2CAD8;font-size:14px;line-height:1.35}
+.ov-cap b{color:#fff;font-weight:500;font-family:var(--mono);flex:none}
+#toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);background:#111A2E;color:#fff;font-size:15px;padding:12px 20px;border-radius:10px;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:30;border:1px solid #24304A}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+/* =====================================================================
+   S1 · COVER (nền tối)
+   ===================================================================== */
+.slide.dark{background:var(--dark);color:#fff}
+.cv-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:96px 96px;background-position:-1px -1px;-webkit-mask-image:radial-gradient(ellipse 70% 80% at 72% 45%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse 70% 80% at 72% 45%,#000 25%,transparent 75%)}
+.cv-glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(30px)}
+.cv-glow.g1{width:1100px;height:1100px;right:-260px;top:-300px;background:radial-gradient(circle,rgba(43,80,240,.55),rgba(43,80,240,0) 62%)}
+.cv-glow.g2{width:900px;height:900px;left:260px;bottom:-640px;background:radial-gradient(circle,rgba(29,63,216,.35),rgba(29,63,216,0) 65%)}
+.cover .eyebrow{position:absolute;left:128px;top:104px;color:var(--a-300)}
+.cover h1{position:absolute;left:120px;top:250px;font-size:176px;line-height:.94;font-weight:600;letter-spacing:-.05em;color:#fff}
+.cover h1 span{background:linear-gradient(95deg,#fff 10%,var(--a-300) 75%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.05em}
+.cv-sub{position:absolute;left:128px;top:684px;font-size:28px;line-height:1.5;color:rgba(255,255,255,.72);font-weight:400}
+.cv-by{position:absolute;left:128px;right:128px;bottom:88px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:flex;align-items:baseline;gap:24px}
+.cv-by b{font-size:24px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.cv-by span{font-family:var(--mono);font-size:16px;color:rgba(255,255,255,.6);letter-spacing:.04em}
+.cv-art{position:absolute;right:128px;top:150px;width:640px;height:640px}
+.cv-art svg{width:100%;height:100%;overflow:visible}
+
+/* =====================================================================
+   S4 · KẾT QUẢ Q3
+   ===================================================================== */
+.s4 .body{display:grid;grid-template-columns:560px 1fr;grid-template-rows:1fr auto;column-gap:96px;row-gap:26px}
+.s4-l{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:6px}
+.hero-n{font-size:168px;line-height:.9;margin-top:14px;color:var(--ink);letter-spacing:-.055em}
+.hero-n em{font-style:normal;font-size:80px;color:var(--a-600);margin-left:6px;letter-spacing:-.03em}
+.prog-h{display:flex;align-items:baseline;justify-content:space-between}
+.prog-h .num{font-size:48px;color:var(--ink)}
+.prog-h .num small{font-size:28px;margin-left:2px}
+.track{position:relative;height:10px;border-radius:5px;background:#E9EDF3;margin-top:14px}
+.track>i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--a-600)}
+.duo{display:grid;grid-template-columns:1fr 1fr;padding-top:30px;border-top:1px solid var(--line)}
+.duo>div+div{padding-left:36px;border-left:1px solid var(--line)}
+.duo .num{font-size:72px;line-height:1;color:var(--ink);margin-bottom:12px}
+.duo .num small{font-size:36px;color:var(--a-600);margin-left:4px}
+.s4-r{display:flex;flex-direction:column;min-height:0}
+.s4-r svg{flex:1;min-height:0;width:100%;margin-top:12px}
+.legend .hollow{background:var(--a-100);border:1.5px solid var(--a-300)}
+.legend .solid{background:var(--a-600)}
+.s4-rank{grid-column:1 / -1;display:grid;grid-template-columns:560px repeat(3,1fr);column-gap:0;padding-top:26px;border-top:1px solid var(--line);align-items:end}
+.s4-rank>.lab{padding-bottom:8px;color:var(--ink)}
+.rk{padding-left:36px;border-left:1px solid var(--line);display:flex;align-items:baseline;gap:16px}
+.rk .num{font-size:52px;line-height:1;color:var(--ink)}
+.rk .num i{font-style:normal;color:var(--a-600);font-weight:500;margin-right:2px}
+
+/* =====================================================================
+   S8 · PHỄU NEW SALES
+   ===================================================================== */
+.s8 .body{display:grid;grid-template-columns:1fr 440px;column-gap:72px}
+.s8-l{display:flex;flex-direction:column;min-height:0}
+.fn-wrap{flex:1;display:grid;grid-template-columns:560px 1fr;column-gap:48px;margin-top:20px;min-height:0}
+.fn-wrap>svg{width:560px;height:560px;overflow:visible}
+.callouts{position:relative}
+.callout{position:absolute;left:0;right:0;padding:4px 0 4px 26px;border-left:3px solid var(--warn)}
+.co-h{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.co-n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--warn);color:var(--ink);display:grid;place-items:center;font-family:var(--mono);font-size:15px;font-weight:500}
+.callout p{font-size:18px;line-height:1.55;color:var(--ink-2);margin-top:10px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.act{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:500;color:var(--a-700);background:var(--a-100);padding:6px 12px;border-radius:8px}
+.act svg.i{width:16px;height:16px;stroke-width:2.2}
+.fn-note{display:flex;align-items:center;gap:12px;font-size:16px;color:var(--muted);padding-top:18px;border-top:1px solid var(--line)}
+.fn-note b{color:var(--ink);font-weight:600}
+.fn-note svg.i{width:20px;height:20px;color:var(--good);flex:none}
+.s8-r{padding:32px 34px;display:flex;flex-direction:column}
+.s8-r svg{width:100%;flex:1;min-height:0;margin-top:8px}
+.s8-r .cap{font-size:18px;line-height:1.5;color:var(--ink-2);padding-top:18px;border-top:1px solid #DDE2EA}
+
+/* =====================================================================
+   S16 · AI TRONG QUY TRÌNH BÁN HÀNG
+   ===================================================================== */
+.s16 .hd .legend{position:absolute;right:0;top:-2px}
+.s16 .legend .on{background:var(--a-600)}
+.s16 .legend .q4{background:#fff;border:1.5px dashed var(--a-500)}
+.s16 .body{display:flex;flex-direction:column;gap:28px;margin-top:40px}
+.s16-top{flex:none;display:grid;grid-template-columns:auto 1fr 380px;column-gap:64px;align-items:center;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.save .big{display:flex;align-items:baseline;gap:10px;white-space:nowrap;color:var(--ink)}
+.save .big .num{font-size:88px;line-height:.95}
+.save .big .u{font-size:30px;font-weight:500;color:var(--ink-2)}
+.save .big .arr{font-size:40px;color:var(--a-600);margin:0 10px;font-weight:400}
+.save .lb{display:flex;align-items:center;gap:14px;margin-top:12px}
+.cmp{display:flex;flex-direction:column;gap:14px}
+.cmp-r{display:grid;grid-template-columns:64px 1fr 84px;align-items:center;gap:16px}
+.cmp-r .tr{height:12px;border-radius:6px;background:#EDF0F5;overflow:hidden}
+.cmp-r .tr i{display:block;height:100%;border-radius:6px}
+.cmp-r b{color:var(--ink);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+.s16-cap{font-size:18px;line-height:1.55;color:var(--ink-2);padding-left:32px;border-left:1px solid var(--line)}
+.s16-cap b{font-weight:600;color:var(--a-700)}
+.flow{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.stage{position:relative;display:flex;flex-direction:column}
+.stage .seg{position:absolute;top:27px;left:calc(-50% + 19px);width:calc(100% - 38px + 0px);height:1.5px;background:var(--a-300)}
+.node{width:56px;height:56px;border-radius:50%;margin:0 auto;display:grid;place-items:center;position:relative;z-index:1}
+.node svg.i{width:24px;height:24px}
+.node.on{background:var(--a-600);box-shadow:0 0 0 8px var(--a-100)}
+.node.on svg.i{color:#fff}
+.node.q4{background:#fff;border:1.5px dashed var(--a-500)}
+.node.q4 svg.i{color:var(--a-600)}
+.stage h4{text-align:center;font-size:18px;font-weight:600;color:var(--ink);margin:18px 0 16px;line-height:1.3;letter-spacing:-.01em}
+.stage h4 span{display:block;font-family:var(--mono);font-size:14px;font-weight:500;color:var(--faint);letter-spacing:.08em;margin-bottom:4px}
+.ucs{display:flex;flex-direction:column;gap:10px}
+.uc{border-radius:14px;padding:13px 16px;font-size:18px;line-height:1.38;font-weight:500}
+.uc small{display:block;font-size:16px;font-weight:400;margin-top:5px;line-height:1.4}
+.uc.on{background:var(--a-600);color:#fff}
+.uc.on small{color:rgba(255,255,255,.82)}
+.uc.q4{background:#fff;border:1.5px dashed var(--a-300);color:var(--ink)}
+.uc.q4 small{color:var(--muted)}
+.band{flex:none;display:flex;align-items:center;gap:20px;padding:16px 24px;border:1.5px dashed var(--a-300);border-radius:16px}
+.band .bi{flex:none;width:40px;height:40px;border-radius:12px;background:var(--a-100);display:grid;place-items:center;color:var(--a-700)}
+.band .bi svg{width:20px;height:20px}
+.band p{flex:1;font-size:18px;line-height:1.45;color:var(--ink-2)}
+.band p b{font-weight:600;color:var(--ink)}
+
+/* =====================================================================
+   S19 · DANH SÁCH DEAL Q4
+   ===================================================================== */
+.s19 .body{display:grid;grid-template-columns:1fr 520px;column-gap:56px;margin-top:40px}
+.s19-l{display:flex;flex-direction:column;min-height:0}
+.dt-head,.row{display:grid;grid-template-columns:1fr 130px 210px;column-gap:20px}
+.dt-head{padding:0 12px 12px 192px;border-bottom:1px solid var(--ink)}
+.dt-head .lab:nth-child(2){text-align:right}
+.tiers{display:flex;flex-direction:column}
+.tier{display:grid;grid-template-columns:172px 1fr;column-gap:20px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tier-n{display:flex;align-items:flex-start;gap:10px;padding-top:12px}
+.tier-n i{flex:none;width:12px;height:12px;border-radius:3px;background:var(--tc);margin-top:3px}
+.tier-n .lab{color:var(--ink)}
+.rows{display:flex;flex-direction:column}
+.row{padding:8px 12px;border-radius:10px;align-items:start}
+.rows .row+.row{box-shadow:0 -1px 0 #EEF0F4}
+.row .dn{font-size:18px;font-weight:600;color:var(--ink);line-height:1.35;letter-spacing:-.005em}
+.row .dn small{display:block;font-size:16px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.4;letter-spacing:0}
+.row .dv{font-size:20px;font-weight:600;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.35;letter-spacing:-.02em}
+.row .dv.txt{font-size:16px;font-weight:500;color:var(--muted);line-height:1.4;letter-spacing:0}
+.row .dw{font-size:16px;color:var(--muted);line-height:1.4;padding-top:2px}
+.t-base{--tc:var(--a-900)}
+.t-renew{--tc:var(--a-600)}
+.t-big{--tc:var(--a-300)}
+.t-upside{border-bottom:none}
+.t-upside .tier-n i{background:none;border:1.5px dashed var(--faint)}
+.t-upside .tier-n .lab{color:var(--muted)}
+.t-upside .rows{border:1.5px dashed #C9CFDA;border-radius:14px}
+.t-upside .row .dn,.t-upside .row .dv{color:var(--ink-2)}
+.s19-r{display:flex;flex-direction:column;gap:16px;min-height:0}
+.wpanel{flex:1;min-height:0;padding:28px 30px 18px;display:flex;flex-direction:column}
+.wpanel svg{flex:1;min-height:0;width:100%;margin-top:10px}
+.chip{display:flex;align-items:center;gap:14px;padding:16px 22px;border-radius:16px;background:var(--ink);color:#fff;font-size:16px;line-height:1.45;font-weight:500}
+.chip svg.i{width:22px;height:22px;flex:none;color:var(--a-300)}
+
+/* =====================================================================
+   Bổ sung cho full deck
+   ===================================================================== */
+.a.flip{transform:perspective(700px) rotateX(-92deg);transform-origin:50% 50%;transition:transform .6s var(--ease) var(--d,0ms),opacity .25s linear var(--d,0ms)}
+.a.flip.in{transform:none}
+.a.word{transition-duration:.9s,.9s}
+.ic-t{flex:none;width:52px;height:52px;border-radius:16px;background:var(--a-100);color:var(--a-700);display:grid;place-items:center}
+.ic-t svg.i{width:24px;height:24px}
+.cap-s{font-size:16px;line-height:1.5;color:var(--muted)}
+.cap-s b{color:var(--ink);font-weight:600}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:8px;background:var(--a-100);color:var(--a-700)}
+.tag.dark{background:var(--ink);color:#fff}
+.tag.ghost{background:#fff;border:1px dashed var(--faint);color:var(--muted)}
+
+/* ---------- Slide chương (nền tối, wipe) ---------- */
+.chapter .ch-num{position:absolute;right:88px;top:96px;font-size:540px;line-height:.8;font-weight:600;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px rgba(143,166,255,.38)}
+.chapter .ch-txt{position:absolute;left:128px;top:380px;max-width:1100px}
+.chapter .eyebrow{color:var(--a-300)}
+.chapter h2{margin-top:30px;font-size:112px;line-height:1.02;font-weight:600;letter-spacing:-.045em;color:#fff}
+.ch-map{position:absolute;left:128px;right:128px;bottom:96px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.14)}
+.ch-map div{position:relative;padding-top:22px;font-family:var(--mono);font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38)}
+.ch-map div.on{color:#fff}
+.ch-map div.on::before{content:'';position:absolute;left:0;right:24px;top:-1px;height:2px;background:var(--a-500)}
+.ch-map div.done{color:rgba(255,255,255,.62)}
+
+/* ---------- S2 · Agenda ---------- */
+.s2 .body{display:flex;flex-direction:column;margin-top:64px}
+.ag-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink)}
+.ag{position:relative;display:flex;flex-direction:column;padding:32px 40px 0 0}
+.ag+.ag{padding-left:40px;border-left:1px solid var(--line)}
+.ag+.ag .ghost{left:40px}
+.ag .n{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--a-600);letter-spacing:.06em}
+.ag .ic-t{margin-top:40px;width:64px;height:64px;border-radius:18px}
+.ag .ic-t svg.i{width:28px;height:28px}
+.ag h3{margin-top:auto;font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.ag p{margin-top:16px;font-size:24px;line-height:1.45;color:var(--ink-2);min-height:70px}
+.ag .ghost{position:absolute;left:0;top:200px;font-size:220px;font-weight:600;letter-spacing:-.06em;line-height:1;color:transparent;-webkit-text-stroke:1.5px #E1E6F0}
+.ag-foot{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);display:flex;gap:28px;align-items:center}
+
+/* ---------- S5 · Bốn quý ---------- */
+.s5 .body{display:grid;grid-template-columns:1fr 520px;column-gap:88px}
+.s5-l{display:flex;flex-direction:column;min-height:0}
+.s5-l svg{flex:1;min-height:0;width:100%;margin-top:12px}
+.s5-cap{display:flex;align-items:center;gap:16px;padding-top:20px;border-top:1px solid var(--line);font-size:20px;color:var(--ink-2)}
+.s5-cap b{font-weight:600;color:var(--ink)}
+.s5-r{display:flex;flex-direction:column}
+.rts{margin-top:20px;border-top:1px solid var(--ink)}
+.rt{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:16px;height:84px;border-bottom:1px solid var(--line)}
+.rt .m{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--ink)}
+.rc{height:56px;border-radius:14px;display:flex;align-items:center;gap:12px;padding:0 20px;font-size:20px;font-weight:600}
+.rc svg.i{width:20px;height:20px;stroke-width:2.2}
+.r-bad{background:#FDECEC;color:#B4292F}
+.r-goal{background:#E3F5EE;color:var(--good)}
+.r-out{background:var(--good);color:#fff}
+
+/* ---------- S6 · Nguồn doanh thu ---------- */
+.s6 .body{display:flex;flex-direction:column;gap:30px}
+.donuts{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;column-gap:96px}
+.dcol{display:flex;flex-direction:column;min-height:0}
+.dcol-in{flex:1;display:grid;grid-template-columns:330px 1fr;column-gap:44px;align-items:center}
+.dcol svg{width:330px;height:330px;overflow:visible}
+.lgl{border-top:1px solid var(--ink)}
+.lgr{display:grid;grid-template-columns:16px 1fr auto;column-gap:14px;align-items:center;height:62px;border-bottom:1px solid var(--line);font-size:20px;color:var(--ink-2)}
+.lgr i{width:16px;height:16px;border-radius:4px}
+.lgr b{font-size:26px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.mix{flex:none}
+.mix-bar{display:flex;gap:3px;height:64px;margin-top:14px}
+.mix-bar>div{display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:20px;font-weight:500;border-radius:14px}
+.mix-bar b{font-size:28px;font-weight:600;letter-spacing:-.02em}
+.mix-bar .ex{background:var(--a-600);color:#fff}
+.mix-bar .nw{background:var(--a-100);color:var(--a-900)}
+.mix .cap-s{margin-top:14px}
+
+/* ---------- S7 · Làm tốt / cần cải thiện ---------- */
+.s7 .body{display:grid;grid-template-columns:1fr 1fr;column-gap:96px}
+.colx{display:flex;flex-direction:column}
+.col-h{display:flex;align-items:center;gap:14px;padding-bottom:22px;border-bottom:2px solid var(--sc)}
+.col-h .dot{width:14px;height:14px;border-radius:50%;background:var(--sc)}
+.col-h h3{font-size:30px;font-weight:600;letter-spacing:-.02em}
+.c-good{--sc:var(--good)} .c-warn{--sc:var(--warn)}
+.it{display:grid;grid-template-columns:48px 1fr;column-gap:20px;align-items:start;padding:34px 0;border-bottom:1px solid var(--line)}
+.it .ii{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#E3F5EE;color:var(--good)}
+.it .ii svg.i{width:22px;height:22px;stroke-width:2.2}
+.c-warn .it .ii{background:#FDF3D7;color:#8A6300}
+.it p{font-size:26px;line-height:1.45;color:var(--ink);padding-top:6px}
+.it p b{font-weight:600}
+.bul{margin-top:22px}
+.bul-h{display:flex;justify-content:space-between;align-items:baseline}
+.bul-h .num{font-size:44px;line-height:1}
+.bul-h .num small{font-size:24px;color:var(--muted);font-weight:500}
+.bul .tr{position:relative;height:18px;border-radius:9px;background:#F1F3F7;margin-top:12px}
+.bul .tr>i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:var(--warn)}
+.bul .tr>s{position:absolute;right:0;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.bul-f{display:flex;justify-content:space-between;margin-top:10px}
+
+/* ---------- S9 · Deal tiêu biểu ---------- */
+.s9 .body{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-content:center}
+.dc{padding:36px 36px 32px;display:flex;flex-direction:column}
+.dc-top{display:flex;justify-content:space-between;align-items:center}
+.dc .ic-t{background:#fff;border:1px solid var(--line)}
+.dc h3{font-size:32px;font-weight:600;margin-top:48px;letter-spacing:-.025em;line-height:1.25}
+.dc .v{font-size:128px;line-height:1;margin-top:22px;color:var(--ink)}
+.dc .v small{font-size:60px;color:var(--a-600);margin-left:4px}
+.dc .sub{font-size:18px;color:var(--muted);margin-top:16px}
+.split{display:flex;gap:3px;height:52px;margin-top:20px}
+.split div{flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:18px;font-weight:500;color:#fff;background:var(--a-600)}
+.split div+div{background:var(--a-900)}
+.dc .why{margin-top:auto;padding-top:24px;border-top:1px solid #DDE2EA}
+.dc .split+.why,.dc .sub+.why,.dc .v+.why{margin-top:40px}
+.dc .why p{font-size:22px;line-height:1.5;color:var(--ink-2);margin-top:12px}
+.dc .q{font-size:24px;font-weight:600;color:var(--a-700);margin-top:12px;letter-spacing:-.01em}
+
+/* ---------- S11 · Thay đổi ---------- */
+.s11 .body{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:28px}
+.cg{padding:32px 36px;display:flex;flex-direction:column}
+.cg h3{font-size:28px;font-weight:600;letter-spacing:-.02em;margin-top:12px}
+.ba{display:grid;grid-template-columns:1fr 44px 1fr;align-items:stretch;margin-top:22px}
+.ba>div:not(.arr){padding:18px 20px;border-radius:16px;background:#fff;border:1px solid var(--line)}
+.ba .af{background:var(--a-600)!important;border-color:var(--a-600)!important;color:#fff}
+.ba .af .lab{color:rgba(255,255,255,.75)}
+.ba p{font-size:20px;line-height:1.45;margin-top:8px}
+.ba .arr{display:grid;place-items:center;color:var(--a-600)}
+.ba .arr svg.i{width:24px;height:24px}
+.stat{display:flex;align-items:baseline;gap:18px;margin-top:auto;padding-top:22px}
+.stat .num{font-size:72px;line-height:1}
+.stat .num small{font-size:36px;color:var(--a-600);margin-left:3px}
+.stat>span:last-child{font-size:20px;color:var(--ink-2)}
+.sci{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.sci div{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:16px;background:#fff;border:1px solid var(--line);font-size:20px;line-height:1.35;font-weight:500}
+.sci svg.i{flex:none;width:24px;height:24px;color:var(--a-600)}
+.case{grid-column:1 / -1;display:grid;grid-template-columns:1fr 820px;column-gap:56px;align-items:center;padding:28px 36px;border-radius:24px;border:1.5px solid var(--a-600)}
+.case h3{font-size:28px;font-weight:600;letter-spacing:-.02em;margin-top:10px}
+.case p{font-size:20px;line-height:1.5;color:var(--ink-2);margin-top:10px}
+.case svg{width:820px;height:190px;overflow:visible}
+
+/* ---------- S12 · Tiêu chí L5 ---------- */
+.s12 .body{display:flex;flex-direction:column;gap:52px}
+.ct{border-top:1px solid var(--ink)}
+.ct-h,.ct-r{display:grid;grid-template-columns:1.25fr 1fr 1.35fr 64px;column-gap:36px;align-items:center}
+.ct-h{padding:14px 0;border-bottom:1px solid var(--line)}
+.ct-r{padding:24px 0;border-bottom:1px solid var(--line)}
+.ct-r .c1{font-size:22px;font-weight:600;line-height:1.4;letter-spacing:-.01em}
+.ct-r .c2{font-size:22px;line-height:1.4;color:var(--ink-2)}
+.ct-r .c2 b{font-weight:600;color:var(--ink)}
+.ct-r .c3{font-size:22px;line-height:1.4}
+.ct-r .c3 b{font-size:30px;font-weight:600;letter-spacing:-.02em}
+.ct-r .c3 small{display:block;font-size:16px;color:var(--muted)}
+.ok{width:56px;height:56px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center}
+.ok svg.i{width:28px;height:28px;stroke-width:2.6}
+.l5bar svg{width:100%;height:150px;overflow:visible}
+.evs{display:flex;gap:16px;flex-wrap:wrap}
+.ev{display:flex;align-items:center;gap:12px;padding:16px 22px;border-radius:14px;background:var(--panel);font-size:20px;line-height:1.4;color:var(--ink-2)}
+.ev b{font-weight:600;color:var(--ink)}
+.ev svg.i{flex:none;width:20px;height:20px;color:var(--good);stroke-width:2.4}
+
+/* ---------- S13 · Lộ trình ---------- */
+.s13 .body{display:flex;flex-direction:column;justify-content:center;gap:88px;padding-bottom:40px}
+.tl{position:relative;display:grid;grid-template-columns:repeat(4,1fr)}
+.tl .ln{position:absolute;top:60px;left:12.5%;right:12.5%;height:2px;background:var(--a-300)}
+.tn{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px}
+.tn .dw{height:120px;display:grid;place-items:center}
+.tn .dot{width:80px;height:80px;border-radius:50%;background:#fff;border:2px solid var(--a-300);display:grid;place-items:center;color:var(--a-600);position:relative;z-index:1}
+.tn .dot svg.i{width:30px;height:30px}
+.tn.hi .dot{width:120px;height:120px;background:var(--a-600);border:none;color:#fff;box-shadow:0 0 0 14px var(--a-100)}
+.tn.hi .dot svg.i{width:44px;height:44px}
+.tn .when{margin-top:26px;font-family:var(--mono);font-size:16px;font-weight:500;color:var(--a-600);letter-spacing:.06em}
+.tn h3{margin-top:10px;font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+.tn.hi h3{font-size:34px}
+.tn p{margin-top:10px;font-size:18px;line-height:1.5;color:var(--muted);max-width:340px}
+.mkt{display:grid;grid-template-columns:52px 1fr auto;column-gap:24px;align-items:center;padding:26px 32px;border:1.5px dashed var(--a-300);border-radius:20px}
+.mkt h4{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.mkt p{font-size:18px;line-height:1.5;color:var(--ink-2);margin-top:6px}
+
+/* ---------- S15 · 4 hành động ---------- */
+.s15 .body{display:flex;flex-direction:column;gap:24px}
+.acts4{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.ac{padding:28px 28px 24px;display:flex;flex-direction:column;border-radius:24px;background:var(--panel)}
+.ac .top{display:flex;justify-content:space-between;align-items:center;min-height:32px}
+.ac .n{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--a-600)}
+.ac h3{font-size:25px;font-weight:600;line-height:1.28;margin-top:16px;letter-spacing:-.02em}
+.ac ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.ac li{position:relative;padding-left:20px;font-size:18px;line-height:1.48;color:var(--ink-2)}
+.ac li::before{content:'';position:absolute;left:2px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--a-500)}
+.ac li b{font-weight:600;color:var(--ink)}
+.ac .ft{margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:12px}
+.mchip{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:10px;background:var(--a-600);color:#fff;font-size:16px;font-weight:600;line-height:1.35}
+.mchip svg.i{width:18px;height:18px;flex:none}
+.lnk{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.04em;color:#8A6300;display:flex;align-items:center;gap:8px}
+.lnk i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--warn);color:var(--ink);display:grid;place-items:center;font-style:normal;font-size:14px}
+.ac.key{background:var(--ink);color:#fff}
+.ac.key .n{color:var(--a-300)}
+.ac.key li{color:rgba(255,255,255,.82)} .ac.key li b{color:#fff}
+.ac.key li::before{background:var(--a-300)}
+.ac.key .lnk{color:var(--warn)}
+.mb{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.mb-r{display:grid;grid-template-columns:88px 1fr 92px;align-items:center;gap:12px;font-size:16px}
+.mb-r span{font-family:var(--mono);font-size:14px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.06em}
+.mb-r .tr{height:14px;border-radius:7px;background:rgba(255,255,255,.12)}
+.mb-r .tr i{display:block;height:100%;border-radius:7px}
+.mb-r b{font-weight:600;color:#fff;text-align:right}
+.rhythm{flex:none;display:flex;align-items:center;gap:18px;padding:16px 24px;border-radius:16px;border:1px solid var(--line)}
+.rhythm p{font-size:20px;color:var(--ink-2)} .rhythm p b{font-weight:600;color:var(--ink)}
+.rhythm .ic-t{width:40px;height:40px;border-radius:12px}
+.rhythm .ic-t svg.i{width:20px;height:20px}
+
+/* ---------- S18 · Mục tiêu Q4 ---------- */
+.s18 .body{display:grid;grid-template-columns:500px 1fr;grid-template-rows:1fr auto;column-gap:88px;row-gap:28px}
+.kp3{display:flex;flex-direction:column;justify-content:space-between}
+.kx{padding:18px 0 20px;border-bottom:1px solid var(--line)}
+.kx:first-child{padding-top:0}
+.kx:last-child{border-bottom:none}
+.kx .num{font-size:76px;line-height:1;margin-top:8px;color:var(--ink)}
+.kx .num small{font-size:38px;color:var(--a-600);margin-left:3px}
+.kx .num small.u{color:var(--muted);font-size:30px;font-weight:500}
+.kx .pill{margin-top:12px}
+.s18-r{display:flex;flex-direction:column;min-height:0}
+.s18-r svg{flex:1;min-height:0;width:100%;margin-top:6px}
+.yr{grid-column:1 / -1;padding-top:22px;border-top:1px solid var(--line)}
+.yr svg{width:100%;height:104px;overflow:visible}
+.yr-h{display:flex;gap:28px;align-items:baseline;margin-bottom:6px}
+.legend .k5{background:none;border-top:2px dashed var(--a-300);height:0;border-radius:0;width:22px;vertical-align:4px}
+.legend .g5{background:none;border-top:2px dashed var(--ink);height:0;border-radius:0;width:22px;vertical-align:4px}
+
+/* ---------- S20 · Rủi ro ---------- */
+.s20 .body{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;align-content:center;gap:28px}
+.rk2{padding:28px 32px;border-radius:24px;background:var(--panel);display:flex;flex-direction:column}
+.rh{display:grid;grid-template-columns:40px 1fr;column-gap:16px;align-items:start}
+.sev{width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+.sev svg.i{width:20px;height:20px;stroke-width:2.2}
+.sev.red{background:#FDECEC;color:var(--bad)} .sev.yel{background:#FDF3D7;color:#8A6300}
+.rk2 h3{font-size:25px;font-weight:600;line-height:1.38;letter-spacing:-.015em;padding-top:4px}
+.rk2 .rd{font-size:19px;line-height:1.5;color:var(--muted);margin-top:6px}
+.plan{margin-top:24px;padding-top:20px;border-top:1px solid #DDE2EA;display:grid;grid-template-columns:40px 1fr;column-gap:16px}
+.plan .pa{width:40px;height:40px;border-radius:12px;background:var(--a-600);color:#fff;display:grid;place-items:center}
+.plan .pa svg.i{width:20px;height:20px;stroke-width:2.2}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.plan li{font-size:20px;line-height:1.5;color:var(--ink-2);padding-left:18px;position:relative}
+.plan li::before{content:'';position:absolute;left:2px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--a-500)}
+.plan li b{font-weight:600;color:var(--ink)}
+
+/* ---------- S21 · Kết ---------- */
+.closing .qt{position:absolute;left:160px;right:160px;top:372px;text-align:center;font-size:80px;line-height:1.1;font-weight:700;letter-spacing:-.035em;color:#fff}
+.closing .qt span{display:inline-block;margin:0 .13em}
+.closing .qt span.hl{background:linear-gradient(95deg,#fff 0%,var(--a-300) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.closing .qline{position:absolute;left:0;right:0;top:560px;text-align:center;font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:.06em;color:var(--a-300)}
+.closing .qrule{position:absolute;left:50%;top:520px;width:80px;height:1px;margin-left:-40px;background:rgba(143,166,255,.5)}
+
+/* ---------- Phụ lục ---------- */
+.apx .eyebrow{color:var(--muted)}
+.a1 .body{display:flex;flex-direction:column}
+.a1 svg{flex:1;min-height:0;width:100%;margin-top:12px}
+.a1 .cap-s{padding-top:16px;border-top:1px solid var(--line)}
+.at{border-top:1px solid var(--ink)}
+.at-h,.at-r{display:grid;grid-template-columns:48px 1fr 150px 130px 330px;column-gap:24px;align-items:center}
+.at-h{padding:12px 0;border-bottom:1px solid var(--line)}
+.at-h .lab:last-child{text-align:right}
+.at-r{height:41px;border-bottom:1px solid #EEF0F4;font-size:18px}
+.at-r .ix{font-family:var(--mono);font-size:14px;color:var(--faint)}
+.at-r .nm{font-weight:500;color:var(--ink)}
+.at-r .sr,.at-r .dt{font-size:16px;color:var(--muted)}
+.at-r .dt{font-family:var(--mono);font-size:14px}
+.at-r .vv{display:grid;grid-template-columns:1fr 84px;align-items:center;gap:14px}
+.at-r .vv i{display:block;height:10px;border-radius:5px;background:var(--a-600);justify-self:end}
+.at-r .vv b{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.at-t{display:flex;justify-content:flex-end;gap:24px;align-items:baseline;padding-top:14px}
+.at-t b{font-size:30px;font-weight:600;letter-spacing:-.02em}
+.lt{border-top:1px solid var(--ink)}
+.lt-h,.lt-r{display:grid;grid-template-columns:260px repeat(4,1fr);column-gap:24px;align-items:center}
+.lt-h{padding:14px 0;border-bottom:1px solid var(--line)}
+.lt-h .lab{text-align:right} .lt-h .lab:first-child{text-align:left}
+.lt-r{padding:26px 0;border-bottom:1px solid var(--line)}
+.lt-r .lv{font-size:26px;font-weight:600}
+.lt-r .lv small{display:block;font-size:16px;font-weight:400;color:var(--muted)}
+.lt-r .cv{text-align:right;font-size:40px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lt-r .cv small{font-size:20px;color:var(--muted);font-weight:500;margin-left:2px}
+.lt-r.l5{background:linear-gradient(90deg,var(--a-100),rgba(233,238,255,0))}
+.a3 .body{display:flex;flex-direction:column;gap:40px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.dg>div{padding:26px 30px;border-radius:20px;background:var(--panel);display:grid;grid-template-columns:40px 1fr;column-gap:16px;align-items:start}
+.dg h4{font-size:22px;font-weight:600}
+.dg p{font-size:20px;line-height:1.5;color:var(--ink-2);margin-top:6px}
+.a4 .body{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-content:start}
+.pl{padding:36px;border-radius:24px;background:var(--panel);display:flex;flex-direction:column;gap:18px}
+.pl h3{font-size:36px;font-weight:600;letter-spacing:-.03em}
+.pl dl{display:grid;grid-template-columns:180px 1fr;row-gap:14px;border-top:1px solid #DDE2EA;padding-top:18px}
+.pl dt{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.pl dd{font-size:22px;color:var(--ink)}
+
+.a.gw{opacity:1;transform:none;width:0;transition:width .9s var(--ease) var(--d,0ms);overflow:hidden;white-space:nowrap}
+.a.gw.in{width:var(--w)}
+.static .a.gw{width:var(--w)!important}
+@media (prefers-reduced-motion:reduce){.a.gw{transition:opacity .2s linear!important;opacity:0;width:var(--w)}.a.gw.in{opacity:1}.a.flip{transform:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="arrowGood" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#0E9F6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowBlue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#2B50F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker></defs></svg>
+<div id="viewport">
+<div id="deck">
+
+<!-- ================================================================ S1 -->
+<section class="slide dark cover" data-num="01" data-title="Cover · Level-up Defense">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div><div class="cv-glow g2"></div>
+  <div class="eyebrow a fade" style="--d:100ms">BASE.VN · BUSINESS CONSULTANT</div>
+  <h1 class="a" style="--d:180ms">Level-up<br><span>Defense</span></h1>
+  <p class="cv-sub a" style="--d:300ms">Q3 Review · Action Plan · Forecast Q4 —<br>Đề xuất lên Level 5, Middle Business Consultant</p>
+  <div class="cv-art"><svg data-render="coverBars" viewBox="0 0 640 640" aria-hidden="true"></svg></div>
+  <div class="cv-by a" style="--d:460ms"><b>Phan Mạnh Quang</b><span>Business Consultant · PKD 1.1 Dreamers · 10/2026</span></div>
+  <aside class="notes">Đầu năm em đặt mục tiêu lên L5 vào tháng 10. Hôm nay em xin trình bày kết quả của hành trình đó.</aside>
+</section>
+
+<!-- @S2 -->
+<section class="slide s2" data-num="02" data-title="Agenda · 4 câu hỏi">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">AGENDA</div>
+      <h2 class="title a" style="--d:80ms">4 câu hỏi em sẽ trả lời hôm nay</h2>
+    </header>
+    <div class="body">
+      <div class="ag-grid" data-stagger="90" data-base="240">
+        <div class="ag a"><span class="ghost">01</span><div class="n">01</div><div class="ic-t"><svg class="i" data-icon="bar-chart"></svg></div><h3>Review Q3</h3><p>Quý vừa rồi em làm được gì?</p></div>
+        <div class="ag a"><span class="ghost">02</span><div class="n">02</div><div class="ic-t"><svg class="i" data-icon="award"></svg></div><h3>Trưởng thành</h3><p>Em đã sẵn sàng cho L5 chưa?</p></div>
+        <div class="ag a"><span class="ghost">03</span><div class="n">03</div><div class="ic-t"><svg class="i" data-icon="target"></svg></div><h3>Action plan</h3><p>Q4 em sẽ làm gì khác?</p></div>
+        <div class="ag a"><span class="ghost">04</span><div class="n">04</div><div class="ic-t"><svg class="i" data-icon="trending-up"></svg></div><h3>Forecast Q4</h3><p>1 tỷ đến từ đâu?</p></div>
+      </div>
+      <div class="ag-foot a" style="--d:700ms"><span class="lab">25 phút trình bày · 20 phút trao đổi</span></div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S3 -->
+<section class="slide dark chapter wipe" data-num="03" data-title="Chương 01 · Review Q3">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div>
+  <div class="ch-num a fade" style="--d:300ms">01</div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">01 · REVIEW Q3</div><h2 class="a" style="--d:330ms">Em đã làm được gì</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="on">01 · Review Q3</div><div>02 · Trưởng thành</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <aside class="notes"></aside>
+</section>
+
+<!-- ================================================================ S4 -->
+<section class="slide s4" data-num="04" data-title="Kết quả Q3 so với cam kết">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">Q3 đạt 701M, 88% cam kết, tháng 9 về đích vượt kế hoạch</h2>
+    </header>
+    <div class="body">
+      <div class="s4-l" data-stagger="90" data-base="240">
+        <div class="a">
+          <div class="lab">Doanh thu Q3</div>
+          <div class="hero-n num"><span data-count="q3.revenue" data-dec="0"></span><em>M</em></div>
+        </div>
+        <div class="a">
+          <div class="prog-h"><span class="num"><span data-count="q3.achievePct" data-dec="1"></span><small>%</small></span><span class="lab">Đạt so với cam kết <span data-bind="q3.commit"></span>M</span></div>
+          <div class="track"><i class="a gx" style="--d:420ms" data-width="q3.achievePct"></i></div>
+        </div>
+        <div class="duo a">
+          <div><div class="num"><span data-count="q3.dealsWon" data-dec="0"></span></div><div class="lab">Deal won</div></div>
+          <div><div class="num"><span data-count="q3.arpd" data-dec="1"></span><small>M</small></div><div class="lab">ARPD · TB/deal</div></div>
+        </div>
+      </div>
+      <div class="s4-r a fade" data-build="1" data-label="Biểu đồ Commit vs Actual theo tháng">
+        <div class="ch-h">
+          <div class="ch-t">Doanh thu theo tháng so với cam kết<span>Triệu đồng · theo tháng ghi nhận performance</span></div>
+          <div class="legend"><span><i class="hollow"></i>Commit</span><span><i class="solid"></i>Actual</span></div>
+        </div>
+        <svg data-render="q3Months" viewBox="0 0 1000 540" aria-label="Doanh thu theo tháng so với cam kết"></svg>
+      </div>
+      <div class="s4-rank" data-build="2" data-label="Dải xếp hạng">
+        <div class="lab a">Xếp hạng doanh thu Q3</div>
+        <div class="rk a" style="--d:90ms"><span class="num"><i>#</i><span data-bind="q3.rank.juniorBC"></span></span><span class="lab">Junior BC</span></div>
+        <div class="rk a" style="--d:180ms"><span class="num"><i>#</i><span data-bind="q3.rank.rchn"></span></span><span class="lab">RCHN</span></div>
+        <div class="rk a" style="--d:270ms"><span class="num"><i>#</i><span data-bind="q3.rank.company"></span></span><span class="lab">Toàn công ty</span></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Nói thẳng phần hụt 12% trước, rồi nhấn mạnh tháng 9 đã bắt kịp và vượt kế hoạch.</aside>
+</section>
+
+<!-- @S5 -->
+<section class="slide s5" data-num="05" data-title="Bốn quý và nhịp ổn định">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">Doanh thu tăng 2 quý liên tiếp, 5 tháng liền đạt Goal trở lên</h2>
+    </header>
+    <div class="body">
+      <div class="s5-l a fade" style="--d:200ms">
+        <div class="ch-h">
+          <div class="ch-t">Doanh thu theo quý<span>Triệu đồng</span></div>
+          <div class="legend"><span><i class="g5"></i>Goal L5/quý</span></div>
+        </div>
+        <svg data-render="quarterLine" viewBox="0 0 1000 540" aria-label="Doanh thu theo quý"></svg>
+        <div class="s5-cap a" style="--d:1500ms"><span class="ic-t"><svg class="i" data-icon="gauge"></svg></span><span>Trung bình 9 tháng: <b><span data-bind="avg9m"></span>M/tháng</b>, vượt Goal L5 (<span data-bind="l5.goal"></span>M)</span></div>
+      </div>
+      <div class="s5-r">
+        <div class="ch-t a" style="--d:300ms">Xếp hạng performance hằng tháng (L4)<span>T4–T9/2026</span></div>
+        <div class="rts" data-render="ratings"></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Đây là câu trả lời cho câu hỏi "có duy trì được phong độ không".</aside>
+</section>
+
+<!-- @S6 -->
+<section class="slide s6" data-num="06" data-title="Doanh thu đến từ đâu">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">Khách hiện hữu đóng góp 60% doanh thu, nền ổn định cho năng lực new sales</h2>
+    </header>
+    <div class="body">
+      <div class="donuts">
+        <div class="dcol a fade" style="--d:200ms">
+          <div class="ch-t">Tỷ trọng doanh thu theo nguồn<span>% doanh thu Q3</span></div>
+          <div class="dcol-in"><svg data-render="donut" data-mix="mixRevenuePct" data-center="rev" viewBox="0 0 330 330" aria-label="Tỷ trọng doanh thu theo nguồn"></svg><div class="lgl" data-render="mixLegend" data-mix="mixRevenuePct"></div></div>
+        </div>
+        <div class="dcol a fade" data-build="1" data-label="Donut số deal won theo nguồn">
+          <div class="ch-t">Tỷ trọng số deal won theo nguồn<span>% số deal won Q3</span></div>
+          <div class="dcol-in"><svg data-render="donut" data-mix="mixDealsPct" data-center="deals" viewBox="0 0 330 330" aria-label="Tỷ trọng số deal won theo nguồn"></svg><div class="lgl" data-render="mixLegend" data-mix="mixDealsPct"></div></div>
+        </div>
+      </div>
+      <div class="mix a" data-build="2" data-label="Thanh khách hiện hữu / khách mới">
+        <div class="mix-bar">
+          <div class="ex a gw" data-w="q3.existingShare.revenuePct" style="--d:200ms"><span>Khách hiện hữu</span><b><span data-bind="slides.s6.existingLabelPct"></span>%</b></div>
+          <div class="nw" style="flex:1"><span>Khách mới</span><b><span data-bind="slides.s6.newLabelPct"></span>%</b></div>
+        </div>
+        <p class="cap-s">Tỷ trọng khách hiện hữu tăng do nhận bàn giao account AM/CSM. H1/2026 new sales chiếm ~<span data-bind="slides.s6.h1NewPct"></span>% doanh thu.</p>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Chủ động giải thích trước để không bị hiểu là new sales yếu đi.</aside>
+</section>
+
+<!-- @S7 -->
+<section class="slide s7" data-num="07" data-title="Làm tốt và cần cải thiện">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">Thế mạnh đã rõ, điểm nghẽn cũng đã rõ</h2>
+    </header>
+    <div class="body">
+      <div class="colx c-good" data-stagger="90" data-base="220">
+        <div class="col-h a"><span class="dot"></span><h3>Làm tốt</h3></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Đạt ~90% mục tiêu, <b>tháng 9 vượt cam kết</b></p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Doanh thu trung bình ổn định: <b><span data-bind="avg9m"></span>M/tháng</b> trong 9 tháng</p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p><b><span data-bind="q3.dealsWon"></span> deal won</b>, nhịp chốt đều</p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Khai thác hiệu quả nguồn <b>up/cross và CSM</b></p></div>
+      </div>
+      <div class="colx c-warn" data-build="1" data-label="Cột Cần cải thiện" data-stagger="110" data-base="0">
+        <div class="col-h a"><span class="dot"></span><h3>Cần cải thiện</h3></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="alert-circle"></svg></span>
+          <div><p><b>New meeting còn thấp</b>, nên new sales còn thấp</p>
+            <div class="bul">
+              <div class="bul-h"><span class="num"><span data-count="q3.newMeetings" data-dec="0"></span><small> / <span data-bind="q3.newMeetingTarget"></span> new meeting</small></span><span class="pill" style="background:#FDF3D7;color:#8A6300"><span><span data-bind="slides.s7.meetingPct"></span>%</span></span></div>
+              <div class="tr"><i class="a gw" data-w-ratio="q3.newMeetings/q3.newMeetingTarget" style="--d:300ms"></i><s></s></div>
+              <div class="bul-f"><span class="lab">0</span><span class="lab">Mục tiêu <span data-bind="q3.newMeetingTarget"></span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="alert-circle"></svg></span><p>Số lượng lead bị thu hồi chưa được kiểm soát tốt, <b>chưa giữ được chuẩn cơ bản</b></p></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- ================================================================ S8 -->
+<section class="slide s8" data-num="08" data-title="Phễu new sales">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">107 lead ra 3 deal new: phễu nghẽn ở đầu vào, chất lượng sau meeting giữ vững</h2>
+    </header>
+    <div class="body">
+      <div class="s8-l a fade" style="--d:200ms">
+        <div class="ch-t">Phễu new sales Q3<span>Không tính khách hiện hữu</span></div>
+        <div class="fn-wrap">
+          <svg data-render="funnel" viewBox="0 0 560 560" aria-label="Phễu new sales Q3"></svg>
+          <div class="callouts">
+            <div class="callout a" data-build="1" data-label="Nghẽn ① · Đầu phễu" style="top:40px;--d:250ms">
+              <div class="co-h"><span class="co-n">1</span>Đầu phễu (Lead → Meeting)</div>
+              <p>Chất lượng lead đầu vào thấp hơn do qualify chặt hơn (vấn đề chung của RC), cộng thêm lead chưa được chăm sóc đủ nhanh và đủ đều</p>
+              <div class="acts"><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 1: Back to basic</span><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 3: 15 new meeting/tháng</span></div>
+            </div>
+            <div class="callout a" data-build="2" data-label="Nghẽn ② · Sau meeting" style="top:322px;--d:250ms">
+              <div class="co-h"><span class="co-n">2</span>Sau meeting (Meeting → Won)</div>
+              <p>Cần tăng tỷ lệ chuyển meeting thành deal</p>
+              <div class="acts"><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 4: deck &amp; demo riêng cho từng khách</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="fn-note a" style="--d:900ms"><svg class="i" data-icon="check-circle"></svg><span><b>3 deal new:</b> <span data-bind="slides.s8.newDeals"></span></span></div>
+      </div>
+      <div class="panel s8-r a" data-build="3" data-label="So sánh Meeting → Won H1 vs Q3">
+        <div class="ch-t">Tỷ lệ Meeting → Won<span>H1/2026 so với Q3/2026</span></div>
+        <svg data-render="meetWon" viewBox="0 0 372 500" aria-label="Tỷ lệ Meeting → Won H1 so với Q3"></svg>
+        <p class="cap a" style="--d:900ms">Chất lượng sau meeting giữ vững dù lead đầu vào khó hơn.</p>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Đầu phễu rớt nhiều chủ yếu do lead được qualify chặt hơn, đây là xu hướng chung của RC. Phần em kiểm soát được là tốc độ chăm sóc lead và số meeting. Mỗi chỗ nghẽn có một action tương ứng ở chương 3.</aside>
+</section>
+
+<!-- @S9 -->
+<section class="slide s9" data-num="09" data-title="Deal tiêu biểu Q3">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">01 · REVIEW Q3</div>
+      <h2 class="title a" style="--d:80ms">Ba deal, ba cách thắng khác nhau</h2>
+    </header>
+    <div class="body" data-render="dealCards" data-stagger="110" data-base="240"></div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Cầu nối sang chương 2: những deal này cho thấy em đã thay đổi cách làm việc.</aside>
+</section>
+
+<!-- @S10 -->
+<section class="slide dark chapter wipe" data-num="10" data-title="Chương 02 · Trưởng thành">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div>
+  <div class="ch-num a fade" style="--d:300ms">02</div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">02 · TRƯỞNG THÀNH</div><h2 class="a" style="--d:330ms">Em đã sẵn sàng cho Level 5</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="on">02 · Trưởng thành</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S11 -->
+<section class="slide s11" data-num="11" data-title="Em đã thay đổi thế nào">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
+      <h2 class="title a" style="--d:80ms">Từ người bán hàng thành người tư vấn chốt được deal ở mọi nguồn</h2>
+    </header>
+    <div class="body">
+      <div class="panel cg a" style="--d:240ms">
+        <div class="lab">01</div>
+        <h3>Chốt deal AM &amp; CSM</h3>
+        <div class="ba">
+          <div><div class="lab">Trước</div><p>Chủ yếu chốt new sales</p></div>
+          <div class="arr"><svg class="i" data-icon="arrow-right"></svg></div>
+          <div class="af"><div class="lab">Nay</div><p>Chốt được cả upsell và tái ký</p></div>
+        </div>
+        <div class="stat"><span class="num"><span data-count="slides.s11.existingRev" data-dec="0"></span><small>M</small></span><span>từ khách hiện hữu trong Q3</span></div>
+      </div>
+      <div class="panel cg a" style="--d:330ms">
+        <div class="lab">02</div>
+        <h3>Làm việc khoa học hơn</h3>
+        <div class="sci">
+          <div><svg class="i" data-icon="mic"></svg>Recap mọi meeting</div>
+          <div><svg class="i" data-icon="refresh-cw"></svg>Review deal định kỳ</div>
+          <div><svg class="i" data-icon="bar-chart"></svg>Ra quyết định dựa trên số liệu CRM</div>
+          <div><svg class="i" data-icon="sparkles"></svg>Ứng dụng AI vào quy trình</div>
+        </div>
+      </div>
+      <div class="case a" style="--d:460ms">
+        <div>
+          <span class="tag dark">Case</span>
+          <h3>Lotte (OOM) → Diamond Plaza</h3>
+          <p>Tư vấn hệ thống KPI cho OOM, từ đó OOM chỉ định Diamond Plaza làm việc với Base (chỉ định thầu, <span data-bind="slides.s11.diamond"></span>M).</p>
+        </div>
+        <svg data-render="caseDiagram" viewBox="0 0 820 190" aria-label="Lotte (OOM) chỉ định Diamond Plaza"></svg>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Slide này dành cho L&amp;D.</aside>
+</section>
+
+<!-- @S12 -->
+<section class="slide s12" data-num="12" data-title="Đối chiếu tiêu chí Level 5">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
+      <h2 class="title a" style="--d:80ms">Đáp ứng đầy đủ điều kiện thăng cấp chuẩn lên Level 5</h2>
+    </header>
+    <div class="body">
+      <div class="ct a fade" style="--d:200ms">
+        <div class="ct-h"><span class="lab">Tiêu chí · chính sách v5.1</span><span class="lab">Yêu cầu</span><span class="lab">Thực tế</span><span></span></div>
+        <div class="ct-r a hl" style="--d:300ms">
+          <div class="c1">Tổng doanh thu 3 tháng gần nhất ≥ Goal L5</div>
+          <div class="c2"><b>≥ <span data-bind="slides.goalL5Quarter"></span>M</b> (3 × <span data-bind="l5.goal"></span>M)</div>
+          <div class="c3"><b><span data-bind="q3.perfRevenue"></span>M</b> performance (<span data-bind="slides.s12.perfPct"></span>%)</div>
+          <div class="ok a pop" style="--d:900ms"><svg class="i" data-icon="check"></svg></div>
+        </div>
+        <div class="ct-r a hl" style="--d:420ms">
+          <div class="c1">Tối đa 1 tháng dưới KPI L4</div>
+          <div class="c2"><b>&lt; <span data-bind="l4.kpi"></span>M</b> tối đa 1 tháng</div>
+          <div class="c3"><b>0 tháng</b><small>Thấp nhất <span data-bind="slides.s12.lowest.m"></span>: <span data-bind="slides.s12.lowest.v"></span>M</small></div>
+          <div class="ok a pop" style="--d:1020ms"><svg class="i" data-icon="check"></svg></div>
+        </div>
+      </div>
+      <div class="l5bar a" style="--d:600ms">
+        <div class="ch-t">Doanh thu performance Q3 so với Goal L5 cả quý<span>Triệu đồng</span></div>
+        <svg data-render="l5Bar" viewBox="0 0 1728 150" aria-label="690,9M so với mốc 525M"></svg>
+      </div>
+      <div class="evs" data-stagger="90" data-base="1400">
+        <div class="ev a"><svg class="i" data-icon="check"></svg><span>TB 9 tháng <b><span data-bind="avg9m"></span>M</b> ≥ Goal L5</span></div>
+        <div class="ev a"><svg class="i" data-icon="check"></svg><span><b><span data-bind="slides.s12.monthsAboveKpiL5"></span></b> tháng ≥ KPI L5</span></div>
+        <div class="ev a"><svg class="i" data-icon="check"></svg><span>Nếu Q3 đã ở L5: Goal / KPI / Outperformance, không tháng nào dưới KPI</span></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Đây là slide quan trọng nhất với hội đồng. Nói chậm.</aside>
+</section>
+
+<!-- @S13 -->
+<section class="slide s13" data-num="13" data-title="Lộ trình & hướng 2027">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
+      <h2 class="title a" style="--d:80ms">Lên L5 đúng kế hoạch đặt ra từ đầu năm và bước tiếp theo</h2>
+    </header>
+    <div class="body">
+      <div class="tl">
+        <div class="ln a gx" style="--d:250ms;transition-duration:1.4s"></div>
+        <div class="tn">
+          <div class="dw"><div class="dot a pop" style="--d:300ms"><svg class="i" data-icon="flag"></svg></div></div>
+          <div class="when a" style="--d:380ms">T1/2026</div>
+          <h3 class="a" style="--d:420ms">Đặt mục tiêu</h3>
+          <p class="a" style="--d:460ms">Đặt mục tiêu lên L5 vào T10 (kế hoạch năm)</p>
+        </div>
+        <div class="tn hi">
+          <div class="dw"><div class="dot a pop" style="--d:700ms"><svg class="i" data-icon="award"></svg></div></div>
+          <div class="when a" style="--d:780ms">T10/2026</div>
+          <h3 class="a" style="--d:820ms">Level 5 · Middle BC</h3>
+        </div>
+        <div class="tn">
+          <div class="dw"><div class="dot a pop" style="--d:1100ms"><svg class="i" data-icon="rocket"></svg></div></div>
+          <div class="when a" style="--d:1180ms">Tiếp theo</div>
+          <h3 class="a" style="--d:1220ms">Incubator Program</h3>
+        </div>
+        <div class="tn">
+          <div class="dw"><div class="dot a pop" style="--d:1450ms"><svg class="i" data-icon="users"></svg></div></div>
+          <div class="when a" style="--d:1530ms">Sau Incubator</div>
+          <h3 class="a" style="--d:1570ms">Build team riêng</h3>
+        </div>
+      </div>
+      <div class="mkt a" style="--d:1800ms">
+        <span class="ic-t"><svg class="i" data-icon="globe"></svg></span>
+        <div><h4>Thị trường mới (giai đoạn khám phá)</h4><p>Tiên phong mở thị trường ngoài Việt Nam cho Base (Malaysia, Philippines, Nhật Bản, Jordan…) qua LinkedIn. Rework đã làm, Base chưa có người.</p></div>
+        <span class="tag ghost">Không phải mảng chính · không ảnh hưởng mục tiêu Q4</span>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S14 -->
+<section class="slide dark chapter wipe" data-num="14" data-title="Chương 03 · Action plan">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div>
+  <div class="ch-num a fade" style="--d:300ms">03</div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">03 · ACTION PLAN</div><h2 class="a" style="--d:330ms">Q4 em sẽ làm gì khác</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Trưởng thành</div><div class="on">03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S15 -->
+<section class="slide s15" data-num="15" data-title="Bốn hành động trọng tâm">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">03 · ACTION PLAN</div>
+      <h2 class="title a" style="--d:80ms">4 hành động, mỗi hành động gắn một chỉ số đo được</h2>
+    </header>
+    <div class="body">
+      <div class="acts4">
+        <div class="ac a" style="--d:240ms">
+          <div class="top"><span class="n">01</span></div>
+          <h3>Back to basic: không để lead nguội</h3>
+          <ul>
+            <li>Tuân thủ tuyệt đối cơ chế:</li>
+            <li>Gọi trong <b>4h</b></li>
+            <li><b>≥5 call</b> trong 6 ngày</li>
+            <li><b>Book meeting</b> trong 15 ngày</li>
+          </ul>
+          <div class="ft">
+            <span class="mchip"><svg class="i" data-icon="target"></svg>Giảm tối đa số lead bị thu hồi</span>
+            <span class="lnk"><i>1</i>Nghẽn ① · Đầu phễu</span>
+          </div>
+        </div>
+        <div class="ac a" data-build="1" data-label="Card 02 · Tìm lại điểm chạm">
+          <div class="top"><span class="n">02</span></div>
+          <h3>Tìm lại điểm chạm với khách hàng</h3>
+          <ul>
+            <li>Email sequence 3 email về <b>hệ thống 2.0 tích hợp AI</b>, chia theo 4 nhóm bài toán: quản lý công việc · nhân sự/chấm công/lương · bán hàng/CRM · văn bản/E-Office</li>
+            <li><b>Chương trình ưu đãi cho trường học</b>: đào lại lead trường học, gọi lại toàn bộ</li>
+          </ul>
+        </div>
+        <div class="ac key a" data-build="2" data-label="Card 03 · Tăng tỷ lệ new sales">
+          <div class="top"><span class="n">03</span><span class="tag" style="background:var(--a-600);color:#fff">Quan trọng nhất</span></div>
+          <h3>Tăng tỷ lệ new sales</h3>
+          <ul>
+            <li><b><span data-bind="slides.s15.targetMeetingsPerMonth"></span> new meeting/tháng</b></li>
+            <li>Đảm bảo số lượng deal mới trong quý</li>
+          </ul>
+          <div class="ft">
+            <div class="mb">
+              <div class="mb-r"><span>Q3</span><div class="tr"><i class="a gw" data-w-ratio="slides.s15.q3MeetingsPerMonth/slides.s15.targetMeetingsPerMonth" style="background:var(--a-300);--d:300ms"></i></div><b>~<span data-bind="slides.s15.q3MeetingsPerMonth"></span>/tháng</b></div>
+              <div class="mb-r"><span>Mục tiêu</span><div class="tr"><i class="a gw" style="--w:100%;background:#fff;--d:450ms"></i></div><b><span data-bind="slides.s15.targetMeetingsPerMonth"></span>/tháng</b></div>
+            </div>
+            <span class="mchip"><svg class="i" data-icon="calendar"></svg><span data-bind="slides.s15.targetMeetingsPerMonth"></span> new meeting/tháng</span>
+            <span class="lnk"><i>1</i>Nghẽn ① · Đầu phễu</span>
+          </div>
+        </div>
+        <div class="ac a" data-build="3" data-label="Card 04 · Ứng dụng AI">
+          <div class="top"><span class="n">04</span></div>
+          <h3>Ứng dụng AI vào công việc</h3>
+          <ul>
+            <li>Đang dùng: recap meeting, demo &amp; slide pitching riêng, proposal &amp; báo giá</li>
+            <li>Mở rộng Q4 ở mọi chặng của deal</li>
+            <li>Chi tiết ở slide tiếp theo</li>
+          </ul>
+          <div class="ft">
+            <span class="lnk"><i>2</i>Nghẽn ② · Sau meeting</span>
+          </div>
+        </div>
+      </div>
+      <div class="rhythm a" style="--d:600ms"><span class="ic-t"><svg class="i" data-icon="calendar"></svg></span><p><b>Nhịp theo dõi:</b> tự review deal hằng tuần</p></div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- ================================================================ S16 -->
+<section class="slide s16" data-num="16" data-title="AI trong quy trình bán hàng">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">03 · ACTION PLAN</div>
+      <h2 class="title a" style="--d:80ms">AI có mặt ở mọi bước của một deal, giúp em có thêm ~22 giờ mỗi tháng để gặp khách</h2>
+      <div class="legend a fade" style="--d:200ms"><span><i class="on"></i>Đang dùng</span><span><i class="q4"></i>Mở rộng Q4</span></div>
+    </header>
+    <div class="body">
+      <div class="s16-top a" style="--d:240ms">
+        <div class="save">
+          <div class="big"><span class="num" data-count="slides.s16.recapBeforeH" data-dec="0"></span><span class="u">giờ</span><span class="arr">→</span><span class="num" data-count="slides.s16.recapAfterMin" data-dec="0"></span><span class="u">phút</span></div>
+          <div class="lb"><span class="lab">Mỗi meeting recap</span><span class="pill good a pop" style="--d:900ms"><svg class="i" data-icon="arrow-down"></svg><span data-count="slides.s16.recapCutPct" data-dec="0" data-pre="−" data-suf="%"></span></span></div>
+        </div>
+        <div class="cmp">
+          <div class="cmp-r"><span class="lab">Trước</span><div class="tr"><i class="a gx" style="width:100%;background:#C9D2E3;--d:400ms"></i></div><b><span data-bind="slides.s16.recapBeforeH"></span> giờ</b></div>
+          <div class="cmp-r"><span class="lab">Nay</span><div class="tr"><i class="a gx" data-width-after style="background:var(--a-600);--d:550ms"></i></div><b><span data-bind="slides.s16.recapAfterMin"></span> phút</b></div>
+        </div>
+        <p class="s16-cap">~<span data-bind="slides.s16.meetingsPerMonth"></span> meeting/tháng ≈ <b><span data-bind="slides.s16.hoursSaved"></span> giờ tiết kiệm</b>, gần <span data-bind="slides.s16.workDays"></span> ngày làm việc</p>
+      </div>
+
+      <div class="flow">
+        <div class="stage" data-build="1" data-label="Chặng 1 · Trước meeting">
+          <div class="node q4 a pop" style="--d:150ms"><svg class="i" data-icon="search"></svg></div>
+          <h4 class="a" style="--d:250ms"><span>01</span>Trước meeting</h4>
+          <div class="ucs" data-stagger="90" data-base="330">
+            <div class="uc q4 a">Brief nghiên cứu khách hàng 1 trang<small>ngành, quy mô, tin tức, phần mềm đang dùng</small></div>
+            <div class="uc q4 a">+ Bộ câu hỏi discovery</div>
+          </div>
+        </div>
+        <div class="stage" data-build="2" data-label="Chặng 2 · Meeting">
+          <div class="seg a gx"></div>
+          <div class="node on a pop" style="--d:300ms"><svg class="i" data-icon="mic"></svg></div>
+          <h4 class="a" style="--d:400ms"><span>02</span>Meeting</h4>
+          <div class="ucs" data-stagger="90" data-base="480">
+            <div class="uc on a">Recap call &amp; meeting</div>
+          </div>
+        </div>
+        <div class="stage" data-build="3" data-label="Chặng 3 · Sau meeting">
+          <div class="seg a gx"></div>
+          <div class="node on a pop" style="--d:300ms"><svg class="i" data-icon="presentation"></svg></div>
+          <h4 class="a" style="--d:400ms"><span>03</span>Sau meeting</h4>
+          <div class="ucs" data-stagger="90" data-base="480">
+            <div class="uc on a">Hệ thống demo riêng cho từng khách</div>
+            <div class="uc on a">Slide pitching riêng</div>
+          </div>
+        </div>
+        <div class="stage" data-build="4" data-label="Chặng 4 · Đề xuất & đàm phán">
+          <div class="seg a gx"></div>
+          <div class="node on a pop" style="--d:300ms"><svg class="i" data-icon="file-text"></svg></div>
+          <h4 class="a" style="--d:400ms"><span>04</span>Đề xuất &amp; đàm phán</h4>
+          <div class="ucs" data-stagger="90" data-base="480">
+            <div class="uc on a">Proposal &amp; báo giá</div>
+            <div class="uc q4 a">Phân tích yêu cầu/hồ sơ thầu → bảng đáp ứng tính năng<small>ví dụ Diamond Plaza, NĐ 355 cho DMS</small></div>
+            <div class="uc q4 a">Tài liệu đa ngôn ngữ EN/KR cho khách FDI</div>
+          </div>
+        </div>
+        <div class="stage" data-build="5" data-label="Chặng 5 · Chốt & bàn giao">
+          <div class="seg a gx"></div>
+          <div class="node q4 a pop" style="--d:300ms"><svg class="i" data-icon="arrow-right-left"></svg></div>
+          <h4 class="a" style="--d:400ms"><span>05</span>Chốt &amp; bàn giao</h4>
+          <div class="ucs" data-stagger="90" data-base="480">
+            <div class="uc q4 a">Tài liệu hand-off cho đội triển khai<small>bài toán, phạm vi, kỳ vọng của khách</small></div>
+          </div>
+        </div>
+        <div class="stage" data-build="6" data-label="Chặng 6 · Khách hiện hữu">
+          <div class="seg a gx"></div>
+          <div class="node q4 a pop" style="--d:300ms"><svg class="i" data-icon="refresh-cw"></svg></div>
+          <h4 class="a" style="--d:400ms"><span>06</span>Khách hiện hữu</h4>
+          <div class="ucs" data-stagger="90" data-base="480">
+            <div class="uc q4 a">Báo cáo “nhìn lại 1 năm sử dụng”<small>làm cơ sở cho tái ký và upsell (DMS, Draho)</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="band a" data-build="7" data-label="Dải Review pipeline hằng tuần">
+        <div class="bi"><svg class="i" data-icon="bar-chart"></svg></div>
+        <p><b>Review pipeline hằng tuần:</b> AI đọc dữ liệu export từ CRM, đánh dấu deal đứng yên lâu và lead sắp quá hạn chăm sóc</p>
+        <span class="pill info">Mở rộng Q4</span>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S17 -->
+<section class="slide dark chapter wipe" data-num="17" data-title="Chương 04 · Forecast Q4">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div>
+  <div class="ch-num a fade" style="--d:300ms">04</div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">04 · FORECAST Q4</div><h2 class="a" style="--d:330ms">1 tỷ đến từ đâu</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Trưởng thành</div><div class="done">03 · Action plan</div><div class="on">04 · Forecast Q4</div></div>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S18 -->
+<section class="slide s18" data-num="18" data-title="Mục tiêu Q4: 1 tỷ">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">04 · FORECAST Q4</div>
+      <h2 class="title a" style="--d:80ms">Q4 commit 1 tỷ: vượt goal năm và giữ nhịp Outperformance L5</h2>
+    </header>
+    <div class="body">
+      <div class="kp3" data-stagger="90" data-base="240">
+        <div class="kx a"><div class="lab">Commit Q4</div><div class="num"><span data-count="q4.commit" data-dec="0"></span><small>M</small></div></div>
+        <div class="kx a"><div class="lab">Cả năm 2026</div><div class="num"><span data-count="year.withQ4" data-div="1000" data-dec="2"></span><small>B</small></div><span class="pill good"><svg class="i" data-icon="check"></svg><span><span data-bind="year.withQ4Pct"></span>% goal <span data-bind="year.goal" data-div="1000"></span>B</span></span></div>
+        <div class="kx a"><div class="lab">Trung bình Q4</div><div class="num"><span data-count="slides.s18.perMonth" data-dec="0"></span><small>M</small><small class="u">/tháng</small></div><span class="pill info"><span>&gt; Outperformance L5 <span data-bind="l5.outperf"></span>M</span></span></div>
+      </div>
+      <div class="s18-r a fade" style="--d:200ms">
+        <div class="ch-h">
+          <div class="ch-t">Kế hoạch doanh thu Q4 theo tháng<span>Triệu đồng · chia theo nguồn</span></div>
+          <div class="legend"><span><i class="k5"></i>KPI L5 <span data-bind="l5.kpi"></span></span><span><i class="g5"></i>Goal L5 <span data-bind="l5.goal"></span></span></div>
+        </div>
+        <svg data-render="q4Stack" viewBox="0 0 1000 520" aria-label="Kế hoạch doanh thu Q4 theo tháng"></svg>
+      </div>
+      <div class="yr a" data-build="4" data-label="Thanh tiến độ năm">
+        <div class="yr-h"><div class="ch-t">Tiến độ doanh thu năm 2026</div><p class="cap-s">Chỉ cần <b><span data-bind="year.neededQ4"></span>M</b> trong Q4 để đạt goal năm.</p></div>
+        <svg data-render="yearBar" viewBox="0 0 1728 104" aria-label="Tiến độ doanh thu năm"></svg>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">T10 thấp nhất vì chưa có deal lớn về. New sales ~114M là quay lại nhịp new sales của H1 (~109M/tháng).</aside>
+</section>
+
+<!-- ================================================================ S19 -->
+<section class="slide s19" data-num="19" data-title="Danh sách deal Q4">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">04 · FORECAST Q4</div>
+      <h2 class="title a" style="--d:80ms">1 tỷ = nền + DMS + Pearl River, có Draho dự phòng và LiteOn là upside</h2>
+    </header>
+    <div class="body">
+      <div class="s19-l a fade" style="--d:200ms">
+        <div class="dt-head"><span class="lab">Deal</span><span class="lab">Giá trị</span><span class="lab">Thời điểm</span></div>
+        <div class="tiers" data-render="dealTable"></div>
+      </div>
+      <div class="s19-r">
+        <div class="panel wpanel a fade" style="--d:260ms">
+          <div class="ch-t">Cộng dồn tới mục tiêu 1.000M<span>Triệu đồng</span></div>
+          <svg data-render="waterfall" viewBox="0 0 460 560" aria-label="Waterfall cộng dồn deal Q4"></svg>
+        </div>
+        <div class="chip a" style="--d:400ms"><svg class="i" data-icon="users"></svg>Manager và DCEO đã cùng tham gia 2 deal lớn trong danh sách</div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @S20 -->
+<section class="slide s20" data-num="20" data-title="Rủi ro & phương án">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">04 · FORECAST Q4</div>
+      <h2 class="title a" style="--d:80ms">Em đã tính trước các rủi ro lớn nhất</h2>
+    </header>
+    <div class="body" data-stagger="110" data-base="240">
+      <div class="rk2 a">
+        <div class="rh"><span class="sev red"><svg class="i" data-icon="alert-triangle"></svg></span><div><h3>DMS: tỷ lệ active chỉ 30–40%.</h3><p class="rd">Luồng văn bản đến thuộc hệ thống Bộ Công Thương, không đấu nối API được.</p></div></div>
+        <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
+          <li>Chuyển trọng tâm giá trị sang <b>giao việc, kế hoạch công việc năm, chấm KPI theo NĐ 355</b> (gói PS 60M)</li>
+          <li>Review sử dụng theo phòng ban trong T10, tìm phòng ban ủng hộ</li>
+          <li>Nếu trượt: <b>Draho thay thế</b></li></ul></div>
+      </div>
+      <div class="rk2 a">
+        <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Draho: hợp đồng còn hạn tới T5/2027.</h3></div></div>
+        <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
+          <li>Lý do ký sớm: <b>chốt ngân sách 2027 ngay trong Q4</b></li>
+          <li>Lên hệ thống 2.0 sớm, cấn trừ thời gian còn lại của hợp đồng cũ</li></ul></div>
+      </div>
+      <div class="rk2 a">
+        <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Tháng 10 mỏng (chưa có deal về).</h3></div></div>
+        <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
+          <li>Đẩy <b>LPH và deal nhỏ</b> về trong T10</li>
+          <li>New sales ~114M</li>
+          <li>Chương trình ưu đãi trường học</li></ul></div>
+      </div>
+      <div class="rk2 a">
+        <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Pearl River phụ thuộc thời điểm chốt cuối năm.</h3></div></div>
+        <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
+          <li>Bám sát PIC, chuẩn bị sẵn hợp đồng</li>
+          <li><b>LiteOn là upside bù</b></li></ul></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes">Nếu bị hỏi "cả DMS và Draho đều trượt thì sao": trả lời bằng nền + Pearl River + upsell/new sales, kèm LiteOn.</aside>
+</section>
+
+<!-- @S21 -->
+<section class="slide dark closing" data-num="21" data-title="Kết · Raise the bar">
+  <div class="cv-grid"></div><div class="cv-glow g1"></div><div class="cv-glow g2"></div>
+  <div class="qt" data-render="quote"></div>
+  <div class="qrule a fade" style="--d:1400ms"></div>
+  <div class="qline a fade" style="--d:1500ms">Q4: 1 tỷ · Cả năm: <span data-bind="year.withQ4Pct"></span>% goal · Level 5</div>
+  <div class="cv-by a" style="--d:1800ms"><b>Cảm ơn anh chị</b><span>Phan Mạnh Quang · Business Consultant · Base.vn</span></div>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @A1 -->
+<section class="slide apx a1" data-appendix data-num="A1" data-title="Phụ lục A1 · Doanh thu theo tháng">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">PHỤ LỤC · A1</div>
+      <h2 class="title a" style="--d:80ms">Doanh thu theo tháng T1–T9/2026</h2>
+    </header>
+    <div class="body a fade" style="--d:200ms">
+      <div class="ch-h">
+        <div class="ch-t">Doanh thu theo tháng<span>Triệu đồng</span></div>
+        <div class="legend"><span><i class="solid" style="background:var(--a-600)"></i>Doanh thu</span><span><i class="k5"></i>KPI L5 <span data-bind="l5.kpi"></span></span><span><i class="g5"></i>Goal L5 <span data-bind="l5.goal"></span></span></div>
+      </div>
+      <svg data-render="months9" viewBox="0 0 1728 600" aria-label="Doanh thu theo tháng T1–T9/2026"></svg>
+      <p class="cap-s">T2 và T4 là 2 tháng trắng deal.</p>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @A2 -->
+<section class="slide apx a2" data-appendix data-num="A2" data-title="Phụ lục A2 · 15 deal won Q3">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">PHỤ LỤC · A2</div>
+      <h2 class="title a" style="--d:80ms">15 deal won Q3</h2>
+    </header>
+    <div class="body a fade" style="--d:200ms" data-render="dealsQ3"></div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @A3 -->
+<section class="slide apx a3" data-appendix data-num="A3" data-title="Phụ lục A3 · Mốc doanh thu L4/L5">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">PHỤ LỤC · A3</div>
+      <h2 class="title a" style="--d:80ms">Mốc doanh thu L4/L5 theo chính sách v5.1</h2>
+    </header>
+    <div class="body">
+      <div class="lt a fade" style="--d:200ms" data-render="levels"></div>
+      <div class="dg a" style="--d:400ms">
+        <div><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h4>Cảnh báo</h4><p>Khi 2 tháng dưới KPI</p></div></div>
+        <div><span class="sev red"><svg class="i" data-icon="alert-triangle"></svg></span><div><h4>Hạ cấp</h4><p>Khi 3 tháng dưới KPI trong 6 tháng gần nhất</p></div></div>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<!-- @A4 -->
+<section class="slide apx a4" data-appendix data-num="A4" data-title="Phụ lục A4 · Pipeline dài hạn">
+  <div class="slide-in">
+    <header class="hd">
+      <div class="eyebrow a">PHỤ LỤC · A4</div>
+      <h2 class="title a" style="--d:80ms">Pipeline dài hạn</h2>
+    </header>
+    <div class="body" data-stagger="110" data-base="200">
+      <div class="pl a">
+        <span class="ic-t"><svg class="i" data-icon="briefcase"></svg></span>
+        <h3>GAET</h3>
+        <dl><dt>Giai đoạn</dt><dd>Showcase</dd><dt>Dealsize</dt><dd>~1,5B</dd><dt>Next step</dt><dd>Chưa có next step cụ thể</dd></dl>
+      </div>
+      <div class="pl a">
+        <span class="ic-t"><svg class="i" data-icon="globe"></svg></span>
+        <h3>Lotte Jakarta</h3>
+        <dl><dt>Trạng thái</dt><dd>Pipeline dài hạn</dd></dl>
+      </div>
+    </div>
+  </div>
+  <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
+  <aside class="notes"></aside>
+</section>
+
+<div id="progress"></div>
+</div>
+</div>
+<div id="overview" aria-hidden="true"><h3>Tổng quan slide</h3><div class="ov-hint">Bấm vào slide để nhảy tới · ← → ↑ ↓ để chọn, Enter để mở · O hoặc Esc để đóng</div><div class="grid"></div></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const get = path => path.split('.').reduce((o,k)=>o==null?undefined:o[k], DATA);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Định dạng số kiểu Việt: 1.000 · 87,7
+function fmt(v, dec=0){
+  const neg = v < 0; const s = Math.abs(v).toFixed(dec);
+  let [i, d] = s.split('.');
+  i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (neg ? '−' : '') + i + (d ? ',' + d : '');
+}
+const M = (v, dec=0) => fmt(v, dec) + 'M';
+
+// Icon line kiểu Lucide (24×24, stroke 2)
+const ICONS = {
+  'trending-up':'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  'target':'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  'check-circle':'<circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 5-5.5"/>',
+  'wallet':'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+  'trophy':'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  'search':'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  'mic':'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+  'presentation':'<path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/>',
+  'file-text':'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  'arrow-right-left':'<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+  'refresh-cw':'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  'clock':'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  'users':'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  'bar-chart':'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  'arrow-right':'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  'arrow-down':'<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+  'check':'<polyline points="20 6 9 17 4 12"/>'
+};
+
+// Cột bo góc ở đầu dữ liệu, vuông ở trục
+function barPath(x, y, w, h, r=6){
+  if (h <= 0) return '';
+  r = Math.min(r, h, w/2);
+  const b = y + h;
+  return `M${x},${b}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${b}Z`;
+}
+
+/* =====================================================================
+   Renderers: mọi biểu đồ vẽ bằng SVG inline từ DATA
+   ===================================================================== */
+const R = {};
+const C = { ink:'#0B1220', ink2:'#2A3345', muted:'#5E6878', faint:'#8A94A6', grid:'#EEF0F4', base:'#C9CFDA',
+            a900:'#0A1840', a700:'#1D3FD8', a600:'#2B50F0', a500:'#4F70FF', a300:'#8FA6FF', a100:'#E9EEFF',
+            good:'#0E9F6E', goodBg:'#E3F5EE', warn:'#F2A900' };
+
+// S1 · 4 cột ánh sáng tăng dần theo tỷ lệ doanh thu 4 quý (không ghi số)
+R.coverBars = svg => {
+  const vals = DATA.quarters.map(q => q.v), max = Math.max(...vals);
+  const bw = 96, gap = 44, n = vals.length, x0 = (640 - (n*bw + (n-1)*gap)) / 2, base = 600, hmax = 470;
+  let bars = '';
+  vals.forEach((v, i) => {
+    const h = v / max * hmax, x = x0 + i*(bw+gap), y = base - h, last = i === n-1;
+    bars += `<path class="a gy" style="--d:${350 + i*140}ms" d="${barPath(x, y, bw, h, bw/2)}" fill="url(#${last ? 'cvHi' : 'cvBar'})" stroke="rgba(255,255,255,${last ? .35 : .12})" stroke-width="1"/>`;
+  });
+  const lx = x0 + (n-1)*(bw+gap) + bw/2, ly = base - hmax + bw/2;
+  svg.innerHTML =
+    `<defs><linearGradient id="cvBar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FA6FF" stop-opacity=".75"/><stop offset="1" stop-color="#2B50F0" stop-opacity=".05"/></linearGradient>` +
+    `<linearGradient id="cvHi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#6F8BFF"/><stop offset="1" stop-color="#2B50F0" stop-opacity=".15"/></linearGradient>` +
+    `<radialGradient id="cvGlow"><stop offset="0" stop-color="#6F8BFF" stop-opacity=".55"/><stop offset="1" stop-color="#6F8BFF" stop-opacity="0"/></radialGradient></defs>` +
+    `<circle class="a fade" style="--d:1100ms" cx="${lx}" cy="${ly}" r="150" fill="url(#cvGlow)"/>` +
+    `<line x1="0" x2="640" y1="${base}" y2="${base}" stroke="rgba(255,255,255,.18)"/>` + bars;
+};
+
+// S4 · cột đôi Commit (rỗng) vs Actual (đặc) theo tháng
+R.q3Months = svg => {
+  const W = 1000, L = 56, Rr = 8, T = 96, B = 476, maxV = 350;
+  const y = v => B - v / maxV * (B - T);
+  const months = DATA.q3.months, pct = DATA.slides.s4.monthPct;
+  const gw = (W - L - Rr) / months.length, bw = 104, gap = 12;
+  let g = '';
+  [0, 100, 200, 300].forEach(t => {
+    g += `<line x1="${L}" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}" stroke="${t ? C.grid : C.base}"/>` +
+         `<text class="m" x="${L-16}" y="${y(t)+5}" text-anchor="end" font-size="14" fill="${C.faint}">${fmt(t)}</text>`;
+  });
+  months.forEach((m, i) => {
+    const cx = L + gw*i + gw/2, xc = cx - bw - gap/2, xa = cx + gap/2;
+    const p = pct[m.m], ok = p >= 100, d = 250 + i*170;
+    g += `<g><title>${m.m}: Commit ${fmt(m.commit)}M · Actual ${fmt(m.actual,1)}M</title>` +
+         `<path class="a gy" style="--d:${d}ms" d="${barPath(xc+.75, y(m.commit)+.75, bw-1.5, B-y(m.commit)-.75, 8)}" fill="${C.a100}" stroke="${C.a300}" stroke-width="1.5"/>` +
+         `<path class="a gy" style="--d:${d+90}ms" d="${barPath(xa, y(m.actual), bw, B-y(m.actual), 8)}" fill="${C.a600}"/></g>` +
+         `<text class="a fade" style="--d:${d+750}ms" x="${xc+bw/2}" y="${y(m.commit)-14}" text-anchor="middle" font-size="18" font-weight="500" fill="${C.muted}">${fmt(m.commit)}</text>` +
+         `<text class="a fade" style="--d:${d+800}ms" x="${xa+bw/2}" y="${y(m.actual)-14}" text-anchor="middle" font-size="24" font-weight="600" fill="${C.ink}" letter-spacing="-0.5">${fmt(m.actual)}</text>` +
+         `<text class="m" x="${cx}" y="${B+40}" text-anchor="middle" font-size="16" font-weight="500" fill="${C.ink}">${m.m}</text>`;
+    const top = Math.min(y(m.commit), y(m.actual)) - 78, pw = ok ? 108 : 76;
+    g += `<g class="a pop" style="--d:${d+950}ms">` +
+         `<rect x="${cx-pw/2}" y="${top}" width="${pw}" height="34" rx="17" fill="${ok ? C.goodBg : '#F1F3F7'}"/>` +
+         (ok ? `<path d="M${cx-pw/2+17},${top+17} l5.5,5.5 l10,-11" fill="none" stroke="${C.good}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>` : '') +
+         `<text x="${ok ? cx+11 : cx}" y="${top+23}" text-anchor="middle" font-size="17" font-weight="600" fill="${ok ? C.good : C.muted}">${p}%</text></g>`;
+  });
+  svg.innerHTML = g;
+};
+
+// S8 · phễu cong 3 tầng + vùng nghẽn
+R.funnel = svg => {
+  const F = DATA.funnelNew, CV = DATA.conversion, cx = 280, H = 480, wTop = 560, wBot = 200;
+  const w = yy => wBot + (wTop - wBot) * Math.pow(1 - yy / H, 1.35);
+  const shape = (y0, y1) => {
+    const r = [], l = [];
+    for (let yy = y0; yy < y1; yy += 4) { r.push([cx + w(yy)/2, yy]); l.push([cx - w(yy)/2, yy]); }
+    r.push([cx + w(y1)/2, y1]); l.push([cx - w(y1)/2, y1]);
+    return 'M' + r.concat(l.reverse()).map(p => p[0].toFixed(1) + ',' + p[1]).join('L') + 'Z';
+  };
+  const bands = [[0, 116, C.a900], [182, 298, C.a700], [364, 480, C.a500]];
+  let g = `<path class="a fade" style="--d:200ms" d="${shape(0, H)}" fill="#EEF2FF"/>`;
+  const zone = (y1, y2, x1, x2, n, b) =>
+    `<g data-build="${b}"><rect class="a fade" x="${x1}" y="${y1}" width="${x2-x1}" height="${y2-y1}" rx="20" fill="none" stroke="${C.warn}" stroke-width="2.5" stroke-dasharray="9 7"/>` +
+    `<g class="a pop" style="--d:180ms"><circle cx="${x2}" cy="${(y1+y2)/2}" r="16" fill="${C.warn}"/><text class="m" x="${x2}" y="${(y1+y2)/2+5}" text-anchor="middle" font-size="15" font-weight="500" fill="${C.ink}">${n}</text></g></g>`;
+  g += zone(100, 198, 8, 552, 1, 1) + zone(282, 380, 64, 496, 2, 2); // nằm dưới các tầng phễu
+  bands.forEach(([y0, y1, fill], i) => {
+    g += `<g class="a drop" style="--d:${260 + i*160}ms"><title>${F[i].s}: ${F[i].n}</title><path d="${shape(y0, y1)}" fill="${fill}"/>` +
+         `<text x="${cx}" y="${(y0+y1)/2 + 15}" text-anchor="middle" fill="#fff"><tspan font-size="46" font-weight="600" letter-spacing="-1.5">${fmt(F[i].n)}</tspan><tspan dx="12" font-size="18" font-weight="500" fill-opacity=".88">${F[i].s}</tspan></text></g>`;
+  });
+  const chip = (yy, val, lbl, d) =>
+    `<g class="a fade" style="--d:${d}ms"><rect x="${cx-124}" y="${yy-24}" width="248" height="48" rx="24" fill="#fff" stroke="#E1E5EC"/>` +
+    `<text x="${cx}" y="${yy+7}" text-anchor="middle"><tspan font-size="22" font-weight="600" fill="${C.ink}" letter-spacing="-.5">${fmt(val,1)}%</tspan><tspan dx="10" font-size="16" fill="${C.muted}">${lbl}</tspan></text></g>`;
+  g += chip(149, CV.leadToMeeting, 'Lead → Meeting', 820) + chip(331, CV.meetingToWon.Q3, 'Meeting → Won', 900);
+  g += `<g class="a fade" style="--d:1000ms"><rect x="${cx-124}" y="504" width="248" height="48" rx="24" fill="${C.ink}"/>` +
+       `<text x="${cx}" y="535" text-anchor="middle"><tspan font-size="16" fill="#AEB8CC">Lead → Won</tspan><tspan dx="10" font-size="22" font-weight="600" fill="#fff" letter-spacing="-.5">${fmt(CV.leadToWon,1)}%</tspan></text></g>`;
+  svg.innerHTML = g;
+};
+
+// S8 · cột so sánh Meeting → Won H1 vs Q3
+R.meetWon = svg => {
+  const v = DATA.conversion.meetingToWon, W = 372, L = 44, B = 430, T = 170, maxV = 10;
+  const y = x => B - x / maxV * (B - T);
+  let g = '';
+  [0, 5, 10].forEach(t => {
+    g += `<line x1="${L}" x2="${W}" y1="${y(t)}" y2="${y(t)}" stroke="${t ? '#E3E7EE' : C.base}"/>` +
+         `<text class="m" x="${L-10}" y="${y(t)+5}" text-anchor="end" font-size="14" fill="${C.faint}">${t}%</text>`;
+  });
+  const bars = [['H1', v.H1, C.a300, 132], ['Q3', v.Q3, C.a600, 290]];
+  bars.forEach(([k, val, c, cx], i) => {
+    g += `<path class="a gy" style="--d:${200 + i*160}ms" d="${barPath(cx-48, y(val), 96, B-y(val), 8)}" fill="${c}"><title>${k}: ${fmt(val,1)}%</title></path>` +
+         `<text class="a fade" style="--d:${850 + i*120}ms" x="${cx}" y="${y(val)-18}" text-anchor="middle" font-size="32" font-weight="600" fill="${C.ink}" letter-spacing="-1">${fmt(val,1)}%</text>` +
+         `<text class="m" x="${cx}" y="${B+36}" text-anchor="middle" font-size="16" font-weight="500" fill="${C.ink}">${k}</text>`;
+  });
+  const y1 = y(v.H1) - 70, y2 = y(v.Q3) - 72;
+  g += `<path class="a draw" style="--d:1100ms" pathLength="1" d="M152,${y1} C190,${y1-36} 236,${y2-36} 274,${y2-4}" fill="none" stroke="${C.good}" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arrowGood)"/>` +
+       `<g class="a pop" style="--d:1500ms"><rect x="164" y="${y2-90}" width="96" height="30" rx="15" fill="${C.goodBg}"/><text x="212" y="${y2-69}" text-anchor="middle" font-size="15" font-weight="600" fill="${C.good}">tăng nhẹ</text></g>`;
+  svg.innerHTML = g;
+};
+
+// S19 · bảng deal theo tầng (mỗi tầng là một build)
+R.dealTable = el => {
+  el.innerHTML = DATA.slides.s19.tiers.map((t, ti) => {
+    const rows = t.rows.map((r, ri) => {
+      const val = r.value == null ? `<div class="dv txt">${r.valueText}</div>`
+                : `<div class="dv">${r.approx ? '~' : ''}${M(r.value, r.value % 1 ? 1 : 0)}</div>`;
+      return `<div class="row a${r.hl ? ' hl' : ''}" style="--d:${150 + ri*110}ms">` +
+             `<div class="dn">${r.deal}${r.note ? `<small>${r.note}</small>` : ''}</div>${val}<div class="dw">${r.when || '—'}</div></div>`;
+    }).join('');
+    return `<div class="tier t-${t.key}" data-build="${ti+1}" data-label="Tầng ${t.name}"><div class="tier-n a fade"><i></i><span class="lab">${t.name}</span></div><div class="rows">${rows}</div></div>`;
+  }).join('');
+};
+
+// S19 · waterfall cộng dồn theo tầng tới vạch 1.000M
+R.waterfall = svg => {
+  const S = DATA.slides.s19, all = {}, tierOf = {};
+  S.tiers.forEach((t, ti) => t.rows.forEach(r => { all[r.id] = r; tierOf[r.id] = ti; }));
+  const color = [C.a900, C.a600, C.a300];
+  const W = 460, L = 4, Rr = 4, T = 40, B = 462, maxV = 1100;
+  const y = v => B - v / maxV * (B - T);
+  const ids = S.waterfall, n = ids.length, cw = (W - L - Rr) / n, bw = 50;
+  const yc = y(DATA.q4.commit);
+  let g = `<line x1="${L}" x2="${W-Rr}" y1="${B}" y2="${B}" stroke="${C.base}"/>` +
+          `<g class="a fade" style="--d:500ms"><line x1="${L}" x2="${W-Rr}" y1="${yc}" y2="${yc}" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="6 6"/>` +
+          `<text class="m" x="${L}" y="${yc-12}" font-size="14" font-weight="500" fill="${C.ink}">COMMIT Q4 · ${M(DATA.q4.commit)}</text></g>`;
+  let cum = 0; const steps = [], seen = {};
+  ids.forEach((id, i) => {
+    const r = all[id], ti = tierOf[id], x = L + cw*i + (cw-bw)/2;
+    seen[ti] = (seen[ti] ?? -1) + 1;
+    steps.push({ id, r, ti, k: seen[ti], x, y0: y(cum), y1: y(cum + r.value), i });
+    cum += r.value;
+  });
+  steps.forEach(s => {
+    const d = 160 + s.k*140;
+    const lbl = (s.r.approx ? '~' : '') + fmt(s.r.value, s.r.value % 1 ? 1 : 0);
+    const conn = s.i > 0 ? `<line x1="${steps[s.i-1].x+bw}" x2="${s.x}" y1="${s.y0}" y2="${s.y0}" stroke="#A9B2C3" stroke-width="1" stroke-dasharray="3 4"/>` : '';
+    const words = s.r.short.split(' '), half = Math.ceil(words.length/2);
+    const name = words.length > 1 && s.r.short.length > 9
+      ? `<tspan x="${s.x+bw/2}">${words.slice(0, half).join(' ')}</tspan><tspan x="${s.x+bw/2}" dy="19">${words.slice(half).join(' ')}</tspan>` : s.r.short;
+    g += `<g data-build="${s.ti + 1}"><g class="a fade" style="--d:${d}ms">${conn}</g>` +
+         `<path class="a gy" style="--d:${d}ms" d="${barPath(s.x, s.y1, bw, s.y0 - s.y1, 4)}" fill="${color[s.ti]}"><title>${s.r.deal}: ${lbl}M</title></path>` +
+         `<text class="a fade" style="--d:${d+600}ms" x="${s.x+bw/2}" y="${s.y1-10}" text-anchor="middle" font-size="16" font-weight="600" fill="${C.ink}">${lbl}</text>` +
+         `<text class="a fade" style="--d:${d}ms" x="${s.x+bw/2}" y="${B+26}" text-anchor="middle" font-size="14" font-weight="500" fill="${C.muted}" letter-spacing="-.2">${name}</text></g>`;
+  });
+  svg.innerHTML = g;
+};
+
+Object.assign(ICONS, {
+  'layers':'<path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>',
+  'zap':'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  'flask':'<path d="M9 3h6"/><path d="M10 3v6.5L4.5 19A1.5 1.5 0 0 0 5.8 21h12.4a1.5 1.5 0 0 0 1.3-2L14 9.5V3"/><path d="M7 15h10"/>',
+  'award':'<circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/>',
+  'gauge':'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  'alert-circle':'<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
+  'alert-triangle':'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
+  'flag':'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+  'rocket':'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+  'globe':'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  'sparkles':'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>',
+  'calendar':'<rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>',
+  'briefcase':'<rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'
+});
+// Màu cố định theo nguồn (không theo thứ hạng)
+const SRC = { 'Up/cross': '#0A1840', 'CSM': '#2B50F0', 'Marketing': '#7F98FF', 'Partner': '#C7D3FF' };
+const dec1 = v => v % 1 ? 1 : 0;
+
+// S5 · đường doanh thu theo quý + mốc Goal L5/quý
+R.quarterLine = svg => {
+  const Q = DATA.quarters, W = 1000, L = 60, Rr = 40, T = 50, B = 470, maxV = 800;
+  const y = v => B - v / maxV * (B - T), x = i => L + (i + .5) * (W - L - Rr) / Q.length;
+  let g = '';
+  [0, 200, 400, 600, 800].forEach(t => {
+    g += `<line x1="${L}" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}" stroke="${t ? C.grid : C.base}"/>` +
+         `<text class="m" x="${L-14}" y="${y(t)+5}" text-anchor="end" font-size="14" fill="${C.faint}">${fmt(t)}</text>`;
+  });
+  const pts = Q.map((q, i) => [x(i), y(q.v)]);
+  const line = 'M' + pts.map(p => p.join(',')).join('L');
+  g += `<path class="a fade" style="--d:900ms" d="${line}L${pts[3][0]},${B}L${pts[0][0]},${B}Z" fill="${C.a600}" fill-opacity=".08"/>`;
+  const yg = y(DATA.slides.goalL5Quarter);
+  g += `<g class="a fade" style="--d:300ms"><line x1="${L}" x2="${W-Rr}" y1="${yg}" y2="${yg}" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="7 6"/>` +
+       `<text x="${W-Rr}" y="${yg+26}" text-anchor="end" font-size="16" font-weight="600" fill="${C.ink}">Goal L5/quý = ${M(DATA.slides.goalL5Quarter)}</text></g>`;
+  g += `<path class="a draw" style="--d:350ms;transition-duration:1.2s" pathLength="1" d="${line}" fill="none" stroke="${C.a600}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  Q.forEach((q, i) => {
+    const last = i === Q.length - 1, d = 500 + i * 300;
+    g += `<circle class="a pop" style="--d:${d}ms" cx="${pts[i][0]}" cy="${pts[i][1]}" r="${last ? 11 : 8}" fill="${last ? C.a600 : '#fff'}" stroke="${C.a600}" stroke-width="3"><title>${q.q}: ${fmt(q.v)}M</title></circle>` +
+         `<text class="a fade" style="--d:${d+150}ms" x="${pts[i][0]}" y="${pts[i][1] - (last ? 26 : 22)}" text-anchor="middle" font-size="${last ? 34 : 24}" font-weight="600" fill="${last ? C.a700 : C.ink}" letter-spacing="-.5">${fmt(q.v)}</text>` +
+         `<text class="m" x="${pts[i][0]}" y="${B+36}" text-anchor="middle" font-size="16" font-weight="500" fill="${C.ink}">${q.q}</text>`;
+  });
+  svg.innerHTML = g;
+};
+
+// S5 · dải 6 ô xếp hạng performance, lật lần lượt
+R.ratings = el => {
+  const map = { 'Dưới tối thiểu': ['r-bad', 'alert-triangle'], 'Goal': ['r-goal', 'check'], 'Outperformance': ['r-out', 'trending-up'] };
+  el.innerHTML = Object.entries(DATA.perfRatingL4).map(([m, r], i) => {
+    const [cls, ic] = map[r] || ['r-goal', 'check'];
+    return `<div class="rt"><span class="m">${m}</span><div class="rc ${cls} a flip" style="--d:${700 + i*170}ms"><svg class="i" data-icon="${ic}"></svg>${r}</div></div>`;
+  }).join('');
+};
+
+// S6 · donut theo nguồn, các cung vẽ dần theo chiều kim đồng hồ
+R.donut = svg => {
+  const mix = DATA.q3[svg.dataset.mix], cx = 165, cy = 165, r = 132, sw = 48, gapDeg = 1.1;
+  const pt = a => [cx + r * Math.cos((a - 90) * Math.PI / 180), cy + r * Math.sin((a - 90) * Math.PI / 180)];
+  let g = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#EEF1F6" stroke-width="${sw}"/>`, acc = 0;
+  Object.entries(mix).forEach(([k, v]) => {
+    const a0 = acc / 100 * 360 + gapDeg, a1 = (acc + v) / 100 * 360 - gapDeg;
+    const [x0, y0] = pt(a0), [x1, y1] = pt(a1), large = a1 - a0 > 180 ? 1 : 0;
+    const d = 300 + acc / 100 * 900, dur = Math.max(120, v / 100 * 900);
+    g += `<path class="a draw" style="--d:${d}ms;transition-duration:${dur}ms;transition-timing-function:linear" pathLength="1" d="M${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)}" fill="none" stroke="${SRC[k]}" stroke-width="${sw}"><title>${k}: ${fmt(v, dec1(v))}%</title></path>`;
+    acc += v;
+  });
+  const rev = svg.dataset.center === 'rev';
+  g += `<text class="a fade" style="--d:600ms" x="${cx}" y="${cy+8}" text-anchor="middle" font-size="52" font-weight="600" fill="${C.ink}" letter-spacing="-2">${rev ? fmt(DATA.q3.revenue) + 'M' : fmt(DATA.q3.dealsWon) + ' deal'}</text>` +
+       `<text class="m a fade" style="--d:700ms" x="${cx}" y="${cy+38}" text-anchor="middle" font-size="14" font-weight="500" fill="${C.muted}" letter-spacing="1">${rev ? 'DOANH THU Q3' : 'DEAL WON Q3'}</text>`;
+  svg.innerHTML = g;
+};
+R.mixLegend = el => {
+  const mix = DATA.q3[el.dataset.mix];
+  el.innerHTML = Object.entries(mix).map(([k, v], i) =>
+    `<div class="lgr a fade" style="--d:${1200 + i*90}ms"><i style="background:${SRC[k]}"></i><span>${k}</span><b>${fmt(v, dec1(v))}%</b></div>`).join('');
+};
+
+// S9 · 3 card deal tiêu biểu
+R.dealCards = el => {
+  el.innerHTML = DATA.slides.s9.deals.map((d, i) =>
+    `<div class="panel dc a">
+      <div class="dc-top"><span class="ic-t"><svg class="i" data-icon="${d.icon}"></svg></span><span class="tag">${d.source}</span></div>
+      <h3>${d.name}</h3>
+      <div class="v num"><span data-count="slides.s9.deals.${i}.value" data-dec="${d.dec}"></span><small>M</small></div>
+      ${d.sub ? `<div class="sub">${d.sub}</div>` : ''}
+      ${d.split ? `<div class="split">${d.split.map(([k, v]) => `<div>${k} ~${fmt(v)}M</div>`).join('')}</div>` : ''}
+      <div class="why"><div class="lab">Vì sao thắng</div><p>${d.why}</p>${d.quote ? `<div class="q">“${d.quote}”</div>` : ''}</div>
+    </div>`).join('');
+};
+
+// S11 · sơ đồ 2 node OOM → Diamond Plaza
+R.caseDiagram = svg => {
+  svg.innerHTML =
+    `<g class="a fade" style="--d:700ms"><rect x="1" y="20" width="300" height="150" rx="22" fill="#fff" stroke="#DDE2EA" stroke-width="1.5"/>` +
+    `<text x="151" y="88" text-anchor="middle" font-size="28" font-weight="600" fill="${C.ink}" letter-spacing="-.5">Lotte (OOM)</text>` +
+    `<text class="m" x="151" y="122" text-anchor="middle" font-size="14" font-weight="500" fill="${C.muted}">TƯ VẤN HỆ THỐNG KPI</text></g>` +
+    `<path class="a draw" style="--d:1000ms" pathLength="1" d="M312,95 L506,95" stroke="${C.a600}" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)"/>` +
+    `<text class="a fade" style="--d:1200ms" x="409" y="78" text-anchor="middle" font-size="17" font-weight="600" fill="${C.a700}">Chỉ định thầu</text>` +
+    `<g class="a pop" style="--d:1400ms"><rect x="518" y="20" width="300" height="150" rx="22" fill="${C.a600}"/>` +
+    `<text x="668" y="88" text-anchor="middle" font-size="28" font-weight="600" fill="#fff" letter-spacing="-.5">Diamond Plaza</text>` +
+    `<text x="668" y="126" text-anchor="middle" font-size="24" font-weight="500" fill="#fff" fill-opacity=".85">${M(DATA.slides.s11.diamond)}</text></g>`;
+};
+
+// S12 · thanh ngang 690,9M so với vạch 525M
+R.l5Bar = svg => {
+  const W = 1728, maxV = 800, x = v => v / maxV * W, v = DATA.q3.perfRevenue, gl = DATA.slides.goalL5Quarter;
+  let g = `<rect x="0" y="52" width="${W}" height="48" rx="12" fill="#EEF1F6"/>`;
+  g += `<path class="a gx" style="--d:700ms" d="M12,52 H${x(gl)} V100 H12 Q0,100 0,88 V64 Q0,52 12,52Z" fill="${C.a600}"/>` +
+       `<path class="a gx" style="--d:1250ms;transition-duration:.5s" d="M${x(gl)+2},52 H${x(v)-12} Q${x(v)},52 ${x(v)},64 V88 Q${x(v)},100 ${x(v)-12},100 H${x(gl)+2}Z" fill="${C.good}"><title>${fmt(v,1)}M</title></path>`;
+  [0, 200, 400, 600, 800].forEach(t => g += `<text class="m" x="${Math.min(W-2, Math.max(2, x(t)))}" y="132" text-anchor="${t === 0 ? 'start' : t === 800 ? 'end' : 'middle'}" font-size="14" fill="${C.faint}">${fmt(t)}</text>`);
+  g += `<g class="a fade" style="--d:600ms"><line x1="${x(gl)}" x2="${x(gl)}" y1="36" y2="114" stroke="${C.ink}" stroke-width="2"/>` +
+       `<text x="${x(gl)}" y="24" text-anchor="middle" font-size="16" font-weight="600" fill="${C.ink}">Goal L5 cả quý · ${M(gl)}</text></g>` +
+       `<text class="a fade" style="--d:1600ms" x="${x(v)+18}" y="86" font-size="28" font-weight="600" fill="${C.ink}" letter-spacing="-.5">${M(v,1)} <tspan fill="${C.good}">· ${DATA.slides.s12.perfPct}%</tspan></text>`;
+  svg.innerHTML = g;
+};
+
+// S18 · cột chồng theo tháng, mỗi tháng một build, đường KPI L5 & Goal L5
+R.q4Stack = svg => {
+  const Mo = DATA.q4.months, W = 1000, L = 56, Rr = 8, T = 60, B = 452, maxV = 500;
+  const y = v => B - v / maxV * (B - T), gw = (W - L - Rr) / Mo.length, bw = 196;
+  const col = [C.a900, C.a600, C.a300], txt = ['#fff', '#fff', C.ink];
+  let g = '';
+  [0, 100, 200, 300, 400, 500].forEach(t => {
+    g += `<line x1="${L}" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}" stroke="${t ? C.grid : C.base}"/>` +
+         `<text class="m" x="${L-14}" y="${y(t)+5}" text-anchor="end" font-size="14" fill="${C.faint}">${fmt(t)}</text>`;
+  });
+  const lk = y(DATA.l5.kpi), lg = y(DATA.l5.goal);
+  g += `<g class="a fade" style="--d:400ms"><line x1="${L}" x2="${W-Rr}" y1="${lk}" y2="${lk}" stroke="${C.a300}" stroke-width="2" stroke-dasharray="7 6"/>` +
+       `<line x1="${L}" x2="${W-Rr}" y1="${lg}" y2="${lg}" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="7 6"/></g>`;
+  Mo.forEach((m, i) => {
+    const x = L + gw*i + (gw - bw)/2; let acc = 0, seg = '';
+    m.items.forEach(([k, v], j) => {
+      const y0 = y(acc), y1 = y(acc + v), top = j === m.items.length - 1;
+      const h = y0 - y1 - (j ? 2 : 0);
+      seg += `<path class="a gy" style="--d:${j*220}ms" d="${top ? barPath(x, y1, bw, h, 8) : `M${x},${y1}H${x+bw}V${y1+h}H${x}Z`}" fill="${col[j]}"><title>${m.m} · ${k}: ${fmt(v)}M</title></path>` +
+             `<text class="a fade" style="--d:${j*220 + 450}ms" x="${x + bw/2}" y="${y1 + h/2 + 6}" text-anchor="middle" font-size="17" font-weight="500" fill="${txt[j]}">${k} · <tspan font-weight="700">${fmt(v)}</tspan></text>`;
+      acc += v;
+    });
+    g += `<g data-build="${i+1}" data-label="Cột ${m.m}">${seg}` +
+         `<text class="a fade" style="--d:${m.items.length*220 + 300}ms" x="${x + bw/2}" y="${y(m.target) - 16}" text-anchor="middle" font-size="28" font-weight="600" fill="${C.ink}" letter-spacing="-.5">${fmt(m.target)}</text></g>` +
+         `<text class="m" x="${x + bw/2}" y="${B+36}" text-anchor="middle" font-size="16" font-weight="500" fill="${C.ink}">${m.m}</text>`;
+  });
+  svg.innerHTML = g;
+};
+
+// S18 · thanh tiến độ năm: YTD + Q4 so với goal năm
+R.yearBar = svg => {
+  const Y = DATA.year, W = 1728, maxV = 2700, x = v => v / maxV * W;
+  let g = `<rect x="0" y="30" width="${W}" height="48" rx="12" fill="#EEF1F6"/>` +
+    `<path class="a gx" style="--d:150ms" d="M12,30 H${x(Y.ytd)} V78 H12 Q0,78 0,66 V42 Q0,30 12,30Z" fill="${C.a900}"/>` +
+    `<path class="a gx" style="--d:650ms" d="M${x(Y.ytd)+2},30 H${x(Y.withQ4)-12} Q${x(Y.withQ4)},30 ${x(Y.withQ4)},42 V66 Q${x(Y.withQ4)},78 ${x(Y.withQ4)-12},78 H${x(Y.ytd)+2}Z" fill="${C.a600}"/>` +
+    `<text class="a fade" style="--d:700ms" x="22" y="61" font-size="18" font-weight="500" fill="#fff">YTD <tspan font-weight="700">${M(Y.ytd)}</tspan> · ${fmt(Y.ytdPct,1)}%</text>` +
+    `<text class="a fade" style="--d:1150ms" x="${x(Y.ytd) + 22}" y="61" font-size="18" font-weight="500" fill="#fff">+ Q4 <tspan font-weight="700">${M(DATA.q4.commit)}</tspan></text>` +
+    `<g class="a fade" style="--d:400ms"><line x1="${x(Y.goal)}" x2="${x(Y.goal)}" y1="18" y2="90" stroke="${C.ink}" stroke-width="2"/>` +
+    `<text x="${x(Y.goal)}" y="10" text-anchor="middle" font-size="15" font-weight="600" fill="${C.ink}">Goal năm ${M(Y.goal)}</text></g>` +
+    `<text class="a fade" style="--d:1300ms" x="${x(Y.withQ4)}" y="108" text-anchor="end" font-size="18" font-weight="600" fill="${C.ink}">= ${M(Y.withQ4)} · <tspan fill="${C.good}">${Y.withQ4Pct}% goal</tspan></text>`;
+  svg.innerHTML = g;
+};
+
+// S21 · quote word-by-word
+R.quote = el => {
+  const parts = CLOSING_QUOTE.split(/(?<=\.)\s+/), lastStart = parts.length > 1 ? CLOSING_QUOTE.length - parts[parts.length-1].length : Infinity;
+  let pos = 0;
+  el.innerHTML = CLOSING_QUOTE.split(/\s+/).map((w, i) => {
+    const at = CLOSING_QUOTE.indexOf(w, pos); pos = at + w.length;
+    return `<span class="a word${at >= lastStart ? ' hl' : ''}" style="--d:${300 + i*120}ms">${w}</span>`;
+  }).join('');
+};
+
+// A1 · doanh thu theo tháng T1–T9 + đường KPI L5 / Goal L5
+R.months9 = svg => {
+  const V = DATA.months2026, W = 1728, L = 60, Rr = 8, T = 50, B = 530, maxV = 400;
+  const y = v => B - v / maxV * (B - T), gw = (W - L - Rr) / V.length, bw = 96;
+  let g = '';
+  [0, 100, 200, 300, 400].forEach(t => {
+    g += `<line x1="${L}" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}" stroke="${t ? C.grid : C.base}"/>` +
+         `<text class="m" x="${L-14}" y="${y(t)+5}" text-anchor="end" font-size="14" fill="${C.faint}">${fmt(t)}</text>`;
+  });
+  V.forEach((v, i) => {
+    const cx = L + gw*i + gw/2;
+    if (v > 0) g += `<path class="a gy" style="--d:${200 + i*80}ms" d="${barPath(cx - bw/2, y(v), bw, B - y(v), 8)}" fill="${C.a600}"><title>T${i+1}: ${fmt(v,1)}M</title></path>`;
+    g += `<text class="a fade" style="--d:${800 + i*80}ms" x="${cx}" y="${y(v) - 12}" text-anchor="middle" font-size="20" font-weight="600" fill="${v ? C.ink : C.faint}">${fmt(v, dec1(v))}</text>` +
+         `<text class="m" x="${cx}" y="${B+36}" text-anchor="middle" font-size="16" font-weight="500" fill="${C.ink}">T${i+1}</text>`;
+  });
+  g += `<g class="a fade" style="--d:1500ms"><line x1="${L}" x2="${W-Rr}" y1="${y(DATA.l5.kpi)}" y2="${y(DATA.l5.kpi)}" stroke="${C.a300}" stroke-width="2" stroke-dasharray="7 6"/>` +
+       `<line x1="${L}" x2="${W-Rr}" y1="${y(DATA.l5.goal)}" y2="${y(DATA.l5.goal)}" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="7 6"/></g>`;
+  svg.innerHTML = g;
+};
+
+// A2 · bảng 15 deal won Q3
+R.dealsQ3 = el => {
+  const rows = DATA.appendix.dealsQ3, max = Math.max(...rows.map(r => r[1]));
+  const f = v => fmt(v, Math.max(1, (String(v).split('.')[1] || '').length));
+  el.innerHTML = `<div class="at"><div class="at-h"><span class="lab">#</span><span class="lab">Deal</span><span class="lab">Nguồn</span><span class="lab">Ngày chốt</span><span class="lab">Giá trị (triệu)</span></div>` +
+    rows.map(([n, v, s, d], i) => `<div class="at-r"><span class="ix">${String(i+1).padStart(2,'0')}</span><span class="nm">${n}</span><span class="sr">${s}</span><span class="dt">${d}</span>` +
+      `<span class="vv"><i style="width:${(v / max * 100).toFixed(1)}%"></i><b>${f(v)}</b></span></div>`).join('') +
+    `</div><div class="at-t"><span class="lab">Tổng</span><b>${fmt(DATA.appendix.dealsQ3Total, 2)}M</b></div>`;
+};
+
+// A3 · mốc doanh thu L4/L5
+R.levels = el => {
+  const row = (k, sub, o, cls) => `<div class="lt-r ${cls}"><div class="lv">${k}<small>${sub}</small></div>` +
+    ['backup', 'kpi', 'goal', 'outperf'].map(c => `<div class="cv">${fmt(o[c])}<small>M</small></div>`).join('') + `</div>`;
+  el.innerHTML = `<div class="lt-h"><span class="lab">Level · triệu/tháng</span><span class="lab">Back-up</span><span class="lab">KPI</span><span class="lab">Goal</span><span class="lab">Outperformance</span></div>` +
+    row('Level 4', 'Hiện tại', DATA.l4, '') + row('Level 5', 'Đề xuất', DATA.l5, 'l5');
+};
+
+/* =====================================================================
+   Init: icons, bindings, renderers, build groups
+   ===================================================================== */
+function hydrate(root){
+  $$('svg[data-icon]', root).forEach(s => { s.setAttribute('viewBox','0 0 24 24'); s.innerHTML = ICONS[s.dataset.icon] || ''; });
+}
+$$('[data-render]').forEach(el => R[el.dataset.render](el));
+hydrate(document);
+$$('[data-bind]').forEach(el => { let v = get(el.dataset.bind); if (typeof v === 'number' && el.dataset.div) v /= +el.dataset.div; el.textContent = typeof v === 'number' ? fmt(v, v % 1 ? 1 : 0) : v; });
+$$('[data-w]').forEach(el => el.style.setProperty('--w', get(el.dataset.w) + '%'));
+$$('[data-w-ratio]').forEach(el => { const [a, b] = el.dataset.wRatio.split('/').map(get); el.style.setProperty('--w', (a / b * 100) + '%'); });
+$$('[data-width]').forEach(el => el.style.width = get(el.dataset.width) + '%');
+$$('[data-width-after]').forEach(el => el.style.width = (100 - DATA.slides.s16.recapCutPct) + '%');
+$$('[data-count]').forEach(el => {
+  const v = get(el.dataset.count) / +(el.dataset.div || 1), dec = +(el.dataset.dec || 0);
+  el.dataset.final = (el.dataset.pre || '') + fmt(v, dec) + (el.dataset.suf || '');
+  el.textContent = el.dataset.final;
+});
+// Stagger tự động: các con .a của [data-stagger] cách nhau N ms
+$$('[data-stagger]').forEach(c => {
+  const step = +c.dataset.stagger, base = +(c.dataset.base || 0);
+  $$(':scope > .a', c).forEach((k, i) => k.style.setProperty('--d', (base + i*step) + 'ms'));
+});
+
+const DECK_TOTAL = 21; // tổng số slide chính của deck đầy đủ
+const deckEl = $('#deck'), slides = $$('.slide', deckEl);
+const LAST_MAIN = slides.findIndex(s => s.hasAttribute('data-appendix')) - 1; // S21
+slides.forEach((s, i) => {
+  const pg = $('.pg', s); if (pg) pg.innerHTML = s.hasAttribute('data-appendix') ? `PHỤ LỤC · <b>${s.dataset.num}</b>` : `<b>${s.dataset.num || String(i+1).padStart(2,'0')}</b> / ${DECK_TOTAL}`;
+  s._groups = new Map(); let max = 0;
+  $$('.a, [data-count]', s).forEach(el => {
+    const b = el.closest('[data-build]'); const g = b ? +b.dataset.build : 0;
+    if (!s._groups.has(g)) s._groups.set(g, []);
+    s._groups.get(g).push(el); max = Math.max(max, g);
+  });
+  s._steps = max;
+  s._labels = {};
+  $$('[data-build][data-label]', s).forEach(b => { s._labels[b.dataset.build] ??= b.dataset.label; });
+});
+
+/* =====================================================================
+   Count-up
+   ===================================================================== */
+function countUp(el){
+  const v = get(el.dataset.count) / +(el.dataset.div || 1), dec = +(el.dataset.dec || 0), pre = el.dataset.pre || '', suf = el.dataset.suf || '';
+  if (REDUCED || el.closest('.instant')) { el.textContent = el.dataset.final; return; }
+  const delay = parseFloat(getComputedStyle(el.closest('.a') || el).getPropertyValue('--d')) || 0;
+  const t0 = performance.now() + delay, dur = 900, tok = (el._tok = Symbol());
+  el.textContent = pre + fmt(0, dec) + suf;
+  const tick = now => {
+    if (el._tok !== tok) return;
+    const p = Math.min(1, Math.max(0, (now - t0) / dur)), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = pre + fmt(v * e, dec) + suf;
+    if (p < 1) requestAnimationFrame(tick); else el.textContent = el.dataset.final;
+  };
+  requestAnimationFrame(tick);
+}
+
+/* =====================================================================
+   Deck engine
+   ===================================================================== */
+let cur = -1, step = 0, anims = [];
+
+function showGroup(s, g, on){
+  (s._groups.get(g) || []).forEach(el => {
+    if (el.classList.contains('a')) el.classList.toggle('in', on);
+    if (el.dataset.count != null) { if (on) countUp(el); else el._tok = null; }
+  });
+}
+function setInstant(s, fn){ s.classList.add('instant'); fn(); void s.offsetWidth; s.classList.remove('instant'); }
+function resetSlide(s){ setInstant(s, () => { for (const g of s._groups.keys()) showGroup(s, g, false); }); }
+function revealUpTo(s, n, instant){
+  const run = () => { for (let g = 0; g <= n; g++) showGroup(s, g, true); };
+  instant ? setInstant(s, run) : run();
+}
+
+function go(i, targetStep = 0, dir){
+  i = Math.max(0, Math.min(slides.length - 1, i));
+  anims.forEach(a => a.finish()); anims = [];
+  const from = slides[cur], to = slides[i];
+  if (targetStep === 'end') targetStep = to._steps;
+  if (dir == null) dir = i >= cur ? 1 : -1;
+  if (from && from !== to) {
+    from.classList.remove('active'); from.classList.add('leaving');
+    const out = REDUCED
+      ? from.animate([{opacity:1},{opacity:0}], {duration:200, fill:'forwards'})
+      : from.animate([{opacity:1, transform:'none'},{opacity:0, transform:`translateX(${-40*dir}px)`}], {duration:500, easing:'cubic-bezier(.2,.7,.2,1)', fill:'forwards'});
+    out.onfinish = () => { from.classList.remove('leaving'); out.cancel(); resetSlide(from); };
+    anims.push(out);
+  }
+  if (from !== to) {
+    resetSlide(to);
+    to.classList.add('active');
+    let inA;
+    if (REDUCED) inA = to.animate([{opacity:0},{opacity:1}], {duration:200});
+    else if (to.classList.contains('wipe')) inA = to.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}], {duration:700, easing:'cubic-bezier(.2,.7,.2,1)'});
+    else inA = to.animate([{opacity:0, transform:`translateX(${40*dir}px)`},{opacity:1, transform:'none'}], {duration:500, easing:'cubic-bezier(.2,.7,.2,1)'});
+    anims.push(inA);
+  }
+  cur = i; step = targetStep;
+  // Vào slide theo chiều lùi → hiện ngay trạng thái cuối; chiều tiến → chạy animation
+  revealUpTo(to, step, dir < 0 || targetStep > 0);
+  update();
+}
+function next(){
+  const s = slides[cur];
+  if (step < s._steps) { step++; showGroup(s, step, true); update(); }
+  else if (cur === LAST_MAIN) toast('Hết phần trình bày · bấm A để mở Phụ lục');
+  else if (cur < slides.length - 1) go(cur + 1, 0, 1);
+}
+function prev(){
+  const s = slides[cur];
+  if (step > 0) { showGroup(s, step, false); step--; update(); }
+  else if (cur > 0) go(cur - 1, 'end', -1);
+}
+
+function update(){
+  const s = slides[cur];
+  const frac = cur > LAST_MAIN ? 1 : (cur + (s._steps ? step / s._steps : 1)) / (LAST_MAIN + 1);
+  $('#progress').style.width = (frac * 100) + '%';
+  $('#progress').style.background = s.classList.contains('dark') ? 'var(--a-300)' : 'var(--a-600)';
+  const h = '#/' + (cur + 1);
+  if (location.hash !== h) history.replaceState(null, '', h);
+  syncNotes(); markOverview();
+}
+
+/* ---------- Scale 16:9 letterbox ---------- */
+function fit(){
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  deckEl.style.setProperty('--s', s);
+}
+addEventListener('resize', fit); fit();
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+
+/* ---------- Bản sao tĩnh của slide (overview, notes) ---------- */
+function staticClone(s){
+  const c = s.cloneNode(true);
+  c.classList.remove('active', 'leaving'); c.classList.add('static');
+  c.style.cssText = '';
+  $$('[data-count]', c).forEach(el => el.textContent = el.dataset.final);
+  $$('.notes', c).forEach(n => n.remove());
+  return c;
+}
+
+/* ---------- Overview (O) ---------- */
+const ov = $('#overview'); let ovSel = 0, ovBuilt = false;
+function buildOverview(){
+  const grid = $('.grid', ov); grid.innerHTML = '';
+  slides.forEach((s, i) => {
+    const it = document.createElement('div'); it.className = 'ov-item'; it.dataset.i = i;
+    const th = document.createElement('div'); th.className = 'ov-thumb';
+    th.appendChild(staticClone(s)); it.appendChild(th);
+    const cap = document.createElement('div'); cap.className = 'ov-cap';
+    cap.innerHTML = `<b>${s.dataset.num || String(i+1).padStart(2,'0')}</b><span>${s.dataset.title || ''}</span>`;
+    it.appendChild(cap);
+    it.addEventListener('click', e => { e.stopPropagation(); closeOverview(); go(i, 0); });
+    grid.appendChild(it);
+  });
+  ovBuilt = true; scaleThumbs();
+}
+function scaleThumbs(){ $$('.ov-thumb', ov).forEach(t => { const sl = t.firstChild; sl.style.transform = `scale(${t.clientWidth / 1920})`; }); }
+function markOverview(){ $$('.ov-item', ov).forEach((it, i) => { it.classList.toggle('sel', i === ovSel); }); }
+function openOverview(){ if (!ovBuilt) buildOverview(); ov.classList.add('open'); ovSel = cur; scaleThumbs(); markOverview(); $$('.ov-item', ov)[cur]?.scrollIntoView({block:'center'}); }
+function closeOverview(){ ov.classList.remove('open'); }
+addEventListener('resize', () => ov.classList.contains('open') && scaleThumbs());
+
+/* ---------- Speaker notes (N): ghi chú + slide kế tiếp, không có đồng hồ ---------- */
+let notesWin = null;
+function openNotes(){
+  if (notesWin && !notesWin.closed) { notesWin.focus(); return; }
+  notesWin = window.open('', 'deck-notes', 'width=1280,height=800');
+  if (!notesWin) { toast('Trình duyệt đã chặn cửa sổ notes. Hãy cho phép popup rồi bấm N lại.'); return; }
+  const css = $('#deck-css').textContent;
+  notesWin.document.open();
+  notesWin.document.write(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Speaker notes · Level-up Defense</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>${css}
+body{background:#05080F;color:#E6EAF2;overflow:hidden;font-family:var(--sans)}
+.nw{display:grid;grid-template-columns:1fr 520px;grid-template-rows:auto 1fr;height:100vh;gap:24px;padding:24px 32px}
+.bar{grid-column:1/-1;display:flex;align-items:baseline;gap:22px;border-bottom:1px solid #1C2538;padding-bottom:16px}
+.pos{font-family:var(--mono);font-size:14px;color:#8A94A6;letter-spacing:.08em;text-transform:uppercase}
+.ttl{font-size:22px;font-weight:600;color:#fff;flex:1;letter-spacing:-.01em}
+.nt{font-size:28px;line-height:1.6;color:#F2F4F8;overflow:auto;padding-right:12px;letter-spacing:-.005em}
+.nt .empty{color:#6B7488;font-style:italic}
+.bl{margin-top:24px;font-size:17px;color:#A3ADC2;border-top:1px dashed #263048;padding-top:16px}
+.bl b{color:#fff;font-weight:600}
+.side{display:flex;flex-direction:column;gap:18px;overflow:hidden}
+.nl{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8A94A6;margin-bottom:8px}
+.pv{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:8px;background:#fff}
+.pv .slide{transform-origin:0 0;width:1920px;height:1080px;right:auto;bottom:auto}
+.pv.small{width:62%}
+.hint{font-family:var(--mono);font-size:13px;color:#6B7488;margin-top:auto}
+</style></head><body><div class="nw">
+<div class="bar"><span class="pos" id="pos"></span><span class="ttl" id="ttl"></span></div>
+<div><div class="nt" id="nt"></div><div class="bl" id="bl"></div></div>
+<div class="side"><div><div class="nl">Slide kế tiếp</div><div class="pv" id="pvN"></div></div>
+<div><div class="nl">Đang chiếu</div><div class="pv small" id="pvC"></div></div>
+<div class="hint">Điều hướng được ngay tại cửa sổ này: → ← Space · Home/End · O · A</div></div>
+</div></body></html>`);
+  notesWin.document.close();
+  notesWin.document.addEventListener('keydown', onKey);
+  notesWin.addEventListener('resize', syncNotes);
+  setTimeout(syncNotes, 50);
+}
+function syncNotes(){
+  if (!notesWin || notesWin.closed) return;
+  const d = notesWin.document, s = slides[cur], nx = cur === LAST_MAIN ? null : slides[cur+1];
+  if (!d.getElementById('nt')) return;
+  d.getElementById('pos').textContent = s.hasAttribute('data-appendix') ? `Phụ lục ${s.dataset.num}` : `Slide ${cur+1}/${LAST_MAIN+1}`;
+  d.getElementById('ttl').textContent = s.dataset.title || '';
+  const note = ($('.notes', s)?.textContent || '').trim();
+  d.getElementById('nt').innerHTML = note ? note.replace(/</g,'&lt;') : '<span class="empty">Chưa có ghi chú cho slide này.</span>';
+  const bl = d.getElementById('bl');
+  if (s._steps) {
+    const nextLbl = step < s._steps ? s._labels[step+1] : null;
+    bl.innerHTML = `Build <b>${step}/${s._steps}</b>` + (nextLbl ? ` · Bấm tiếp để hiện: <b>${nextLbl}</b>` : ' · Đã hiện hết, bấm tiếp để sang slide mới');
+  } else bl.textContent = 'Slide không có build.';
+  const put = (id, sl) => {
+    const box = d.getElementById(id); box.innerHTML = '';
+    if (!sl) { box.style.background = '#16294D'; box.innerHTML = '<div style="position:absolute;inset:0;display:grid;place-items:center;color:#8FA3C8;font-size:16px">Hết bài</div>'; return; }
+    box.style.background = '#fff';
+    const c = staticClone(sl); box.appendChild(c);
+    c.style.transform = `scale(${box.clientWidth / 1920})`;
+  };
+  put('pvN', nx); put('pvC', s);
+}
+
+/* ---------- Fullscreen (F) ---------- */
+function toggleFS(){
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{});
+  else document.exitFullscreen?.();
+}
+
+/* ---------- Keyboard ---------- */
+function onKey(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (ov.classList.contains('open')) {
+    const items = $$('.ov-item', ov);
+    const cols = Math.max(1, Math.round($('.grid', ov).clientWidth / (items[0]?.clientWidth + 28 || 1)));
+    if (k === 'Escape' || k === 'o' || k === 'O') closeOverview();
+    else if (k === 'Enter') { closeOverview(); go(ovSel, 0); }
+    else if (k === 'ArrowRight') ovSel = Math.min(items.length-1, ovSel+1);
+    else if (k === 'ArrowLeft') ovSel = Math.max(0, ovSel-1);
+    else if (k === 'ArrowDown') ovSel = Math.min(items.length-1, ovSel+cols);
+    else if (k === 'ArrowUp') ovSel = Math.max(0, ovSel-cols);
+    else return;
+    e.preventDefault(); markOverview(); items[ovSel]?.scrollIntoView({block:'nearest'}); return;
+  }
+  switch (k) {
+    case 'ArrowRight': case ' ': case 'PageDown': case 'Spacebar': next(); break;
+    case 'ArrowLeft': case 'PageUp': prev(); break;
+    case 'Home': go(0, 0); break;
+    case 'End': go(LAST_MAIN, 0); break;
+    case 'f': case 'F': toggleFS(); break;
+    case 'o': case 'O': openOverview(); break;
+    case 'n': case 'N': openNotes(); break;
+    case 'a': case 'A': {
+      const ap = slides.findIndex(s => s.hasAttribute('data-appendix'));
+      if (ap >= 0) go(ap, 0);
+      break;
+    }
+    default: return;
+  }
+  e.preventDefault();
+}
+addEventListener('keydown', onKey);
+
+/* ---------- Click / touch ---------- */
+$('#viewport').addEventListener('click', e => { if (e.button === 0) next(); });
+let tx = null;
+addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+addEventListener('touchend', e => {
+  if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if (Math.abs(dx) > 50) (dx < 0 ? next() : prev());
+}, {passive:true});
+
+/* ---------- Hash #/n ---------- */
+function fromHash(){ const m = location.hash.match(/^#\/(\d+)/); return m ? +m[1] - 1 : 0; }
+addEventListener('hashchange', () => { const i = fromHash(); if (i !== cur) go(i, 0); });
+
+window.deck = { go, next, prev, get index(){ return cur; }, get step(){ return step; }, slides };
+const start = () => go(fromHash(), 0, 1);
+(document.fonts && document.fonts.ready) ? document.fonts.ready.then(start) : start();
+})();
+</script>
+</body>
+</html>
