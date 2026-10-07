@@ -38,7 +38,7 @@ const DATA = {
   ],
   months2026: [193.2, 0, 148.0, 9.8, 364.7, 167.3, 241.9, 149.4, 306.8], // T1–T9
   avg9m: 176,
-  perfRatingL4: { T4:'Dưới tối thiểu', T5:'Outperformance', T6:'Goal', T7:'Outperformance', T8:'Goal', T9:'Outperformance' },
+  perfRatingL4: { T5:'Outperformance', T6:'Goal', T7:'Outperformance', T8:'Goal', T9:'Outperformance' },
   year: { goal: 2300, ytd: 1584, ytdPct: 68.9, neededQ4: 716, withQ4: 2584, withQ4Pct: 112 },
   l4: { backup: 70, kpi: 100, goal: 145, outperf: 190 },
   l5: { backup: 90, kpi: 125, goal: 175, outperf: 250 },
@@ -68,25 +68,26 @@ const DATA = {
     goalL5Quarter: 525,        // Goal L5 cả quý = 3 × 175M (S5, S12)
     s4:  { monthPct: { T7: 81, T8: 75, T9: 102 } },
     s6:  { existingLabelPct: 60, newLabelPct: 40, h1NewPct: 74 },
-    s7:  { meetingPct: 73 },
+    s7:  { meetingPct: 73, q3AvgPerMonth: 234 },   // ~234M/tháng: bổ sung theo yêu cầu
     s8:  { newDeals: 'Biogreen, CP TM Ba Vì (Marketing) · Máy tính Trần Hạnh (Partner)' },
     s9:  { deals: [
       { name: 'Nebecom', value: 179, dec: 0, source: 'Up/cross', icon: 'layers', sub: '3 đợt upsell, lớn nhất 156,8M',
-        why: 'Mở rộng từ nhu cầu hiện hữu: sau triển khai, khách dùng rất active nên nhu cầu mới tự xuất hiện.' },
+        why: 'Mở rộng từ nhu cầu hiện hữu: khách hàng sử dụng hệ thống tích cực sau triển khai, từ đó phát sinh nhu cầu mới.' },
       { name: 'Máy tính Trần Hạnh', value: 117.1, dec: 1, source: 'Partner', icon: 'zap', sub: '',
-        why: 'Chốt nhanh gọn: 6 ngày từ lúc tạo deal đến khi chốt.', quote: 'Always keep it hot.' },
+        why: 'Chốt nhanh: hoàn tất trong vòng 1 tuần kể từ khi tạo deal.', quote: 'Always keep it hot.' },
       { name: 'Biogreen (Hóa dược & CNSH)', value: 108.8, dec: 1, source: 'Marketing', icon: 'flask', sub: '',
-        why: 'Tối đa hóa giá trị deal: phần mềm ~54M và triển khai ~54M, bài toán quản lý quy trình sản xuất theo đơn.',
+        why: 'Tối đa hóa giá trị deal: phần mềm ~54M và triển khai ~54M, giải quyết bài toán quản lý quy trình sản xuất theo đơn hàng.',
         split: [['Phần mềm', 54], ['Triển khai', 54]] }
     ]},
-    s11: { existingRev: 425, diamond: 143 },
+    s11: { existingRev: 425 },
     s12: { perfPct: 132, lowest: { m: 'T8', v: 149 }, monthsAboveKpiL5: '7/9' },
     s15: { q3MeetingsPerMonth: 11, targetMeetingsPerMonth: 15 },
-    s16: { recapBeforeH: 2, recapAfterMin: 30, recapCutPct: 75, meetingsPerMonth: 15, hoursSaved: 22, workDays: 3 },
+    // Recap: 2 giờ → 45 phút (cập nhật). Các số suy ra: giảm 62,5%; 15 meeting × 1,25 giờ ≈ 19 giờ/tháng ≈ hơn 2 ngày làm việc (8 giờ/ngày)
+    s16: { recapBeforeH: 2, recapAfterMin: 45, recapCutPct: 62.5, meetingsPerMonth: 15, hoursSaved: 19, workDays: 2 },
     s18: { perMonth: 333 },
     s19: {
       tiers: [
-        { key: 'base', name: 'Nền', rows: [
+        { key: 'base', name: 'Core', rows: [
           { id: 'lph',  deal: 'LPH (Lotte Properties Hanoi)', short: 'LPH', value: 66, when: 'T10', note: '30% của 221M, phần còn lại thu sau triển khai' },
           { id: 'small', deal: 'Deal nhỏ (Viện A, XNNL, M7)', short: 'Deal nhỏ', value: 70, approx: true, when: 'T10', note: '' },
           { id: 'dp',   deal: 'Diamond Plaza', short: 'Diamond Plaza', value: 143.4, when: 'Chốt T11, tiền về T12', note: 'OOM chỉ định thầu, đang thống nhất scope', hl: true },
@@ -96,15 +97,15 @@ const DATA = {
           { id: 'dms',  deal: 'DMS', short: 'DMS', value: 250, when: 'Hoàn tất thủ tục T11 · HĐ hết hạn T12', note: '+ PS 60M: chấm KPI theo NĐ 355 & phê duyệt kế hoạch công việc năm', hl: true }
         ]},
         { key: 'big', name: 'Cơ hội lớn', rows: [
-          { id: 'prh',  deal: 'Pearl River Hotel', short: 'Pearl River', value: 310, when: 'Chốt T12', note: 'Chủ đầu tư đã có chủ trương, PIC (anh Tuyển) tích cực', hl: true }
+          { id: 'prh',  deal: 'Pearl River Hotel', short: 'Pearl River', value: 310, when: 'Chốt T12', note: 'Chủ đầu tư đã có chủ trương, PIC (Mr. Tuyển) phối hợp tích cực', hl: true }
         ]},
         { key: 'upside', name: 'Dự phòng / Upside', rows: [
-          { id: 'draho', deal: 'Draho tái ký sớm', value: 500, when: '', note: 'HĐ hiện tại hết hạn T5/2027, thay DMS nếu DMS trượt' },
-          { id: 'liteon', deal: 'LiteOn', value: 1000, approx: true, when: '', note: 'Đang dựng showcase, đã nhận dữ liệu, khách cần giải ngân trong năm' },
-          { id: 'lb',   deal: 'Truyền dẫn Long Biên', value: null, valueText: 'Chưa xác định dealsize', when: '', note: 'Quan tâm bảo mật, đề xuất on-premise' }
+          { id: 'draho', deal: 'Draho tái ký sớm', value: 500, when: '', note: 'HĐ hiện tại hết hạn T5/2027, phương án thay thế nếu DMS không tái ký' },
+          { id: 'liteon', deal: 'LiteOn', value: 1000, approx: true, when: '', note: 'Đang xây dựng showcase, đã nhận dữ liệu từ khách hàng, khách hàng có nhu cầu giải ngân trong năm' },
+          { id: 'lb',   deal: 'Truyền dẫn Long Biên', value: null, valueText: 'Chưa xác định dealsize', when: '', note: 'Khách hàng ưu tiên bảo mật, đề xuất triển khai on-premise' }
         ]}
       ],
-      // Waterfall cộng dồn theo đúng thứ tự tầng trong bảng
+      // Waterfall cộng dồn theo đúng thứ tự tầng trong bảng (Core → Tái ký → Cơ hội lớn)
       waterfall: ['lph', 'small', 'dp', 'ns', 'dms', 'prh']
     }
   },
@@ -317,7 +318,7 @@ svg .a.gx{transform-origin:0 50%}
 .save .big .arr{font-size:40px;color:var(--a-600);margin:0 10px;font-weight:400}
 .save .lb{display:flex;align-items:center;gap:14px;margin-top:12px}
 .cmp{display:flex;flex-direction:column;gap:14px}
-.cmp-r{display:grid;grid-template-columns:64px 1fr 84px;align-items:center;gap:16px}
+.cmp-r{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:16px}
 .cmp-r .tr{height:12px;border-radius:6px;background:#EDF0F5;overflow:hidden}
 .cmp-r .tr i{display:block;height:100%;border-radius:6px}
 .cmp-r b{color:var(--ink);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
@@ -346,6 +347,9 @@ svg .a.gx{transform-origin:0 50%}
 .band .bi svg{width:20px;height:20px}
 .band p{flex:1;font-size:18px;line-height:1.45;color:var(--ink-2)}
 .band p b{font-weight:600;color:var(--ink)}
+.band.on{border-style:solid;border-color:var(--a-600)}
+.band.on .bi{background:var(--a-600);color:#fff}
+.pill.on{background:var(--a-600);color:#fff}
 
 /* =====================================================================
    S19 · DANH SÁCH DEAL Q4
@@ -398,9 +402,9 @@ svg .a.gx{transform-origin:0 50%}
 
 /* ---------- Slide chương (nền tối, wipe) ---------- */
 .chapter .ch-num{position:absolute;right:88px;top:96px;font-size:540px;line-height:.8;font-weight:600;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px rgba(143,166,255,.38)}
-.chapter .ch-txt{position:absolute;left:128px;top:380px;max-width:1100px}
+.chapter .ch-txt{position:absolute;left:128px;top:380px;max-width:1400px}
 .chapter .eyebrow{color:var(--a-300)}
-.chapter h2{margin-top:30px;font-size:112px;line-height:1.02;font-weight:600;letter-spacing:-.045em;color:#fff}
+.chapter h2{margin-top:30px;font-size:100px;line-height:1.02;font-weight:600;letter-spacing:-.045em;color:#fff}
 .ch-map{position:absolute;left:128px;right:128px;bottom:96px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.14)}
 .ch-map div{position:relative;padding-top:22px;font-family:var(--mono);font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.38)}
 .ch-map div.on{color:#fff}
@@ -429,7 +433,7 @@ svg .a.gx{transform-origin:0 50%}
 .s5-cap b{font-weight:600;color:var(--ink)}
 .s5-r{display:flex;flex-direction:column}
 .rts{margin-top:20px;border-top:1px solid var(--ink)}
-.rt{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:16px;height:84px;border-bottom:1px solid var(--line)}
+.rt{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:16px;height:96px;border-bottom:1px solid var(--line)}
 .rt .m{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--ink)}
 .rc{height:56px;border-radius:14px;display:flex;align-items:center;gap:12px;padding:0 20px;font-size:20px;font-weight:600}
 .rc svg.i{width:20px;height:20px;stroke-width:2.2}
@@ -495,7 +499,19 @@ svg .a.gx{transform-origin:0 50%}
 .dc .q{font-size:24px;font-weight:600;color:var(--a-700);margin-top:12px;letter-spacing:-.01em}
 
 /* ---------- S11 · Thay đổi ---------- */
-.s11 .body{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:28px}
+.s11 .body{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto;align-content:center;gap:32px}
+.s11 .cg{padding:40px 44px}
+.s11 .cg h3{font-size:34px;margin-top:14px}
+.s11 .ba{margin-top:40px}
+.s11 .ba>div:not(.arr){padding:26px 26px}
+.s11 .ba p{font-size:24px}
+.s11 .stat{padding-top:48px;flex-direction:column;align-items:flex-start;gap:14px}
+.s11 .stat .num{font-size:132px}
+.s11 .stat .num small{font-size:60px}
+.s11 .stat>span:last-child{font-size:22px}
+.s11 .sci{grid-template-columns:1fr;gap:16px;margin-top:40px}
+.s11 .sci div{padding:26px 28px;font-size:24px;gap:18px}
+.s11 .sci svg.i{width:28px;height:28px}
 .cg{padding:32px 36px;display:flex;flex-direction:column}
 .cg h3{font-size:28px;font-weight:600;letter-spacing:-.02em;margin-top:12px}
 .ba{display:grid;grid-template-columns:1fr 44px 1fr;align-items:stretch;margin-top:22px}
@@ -538,7 +554,13 @@ svg .a.gx{transform-origin:0 50%}
 .ev svg.i{flex:none;width:20px;height:20px;color:var(--good);stroke-width:2.4}
 
 /* ---------- S13 · Lộ trình ---------- */
-.s13 .body{display:flex;flex-direction:column;justify-content:center;gap:88px;padding-bottom:40px}
+.s13 .body{display:flex;flex-direction:column;justify-content:center;padding-bottom:24px}
+.tn .br{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+.tn .br-ln{display:block;width:0;height:64px;border-left:2px dashed var(--a-300)}
+.tn .dot.sm{width:64px;height:64px;border-style:dashed;margin-top:4px}
+.tn .dot.sm svg.i{width:26px;height:26px}
+.tn .br .when{margin-top:18px}
+.tn .br h3{font-size:24px}
 .tl{position:relative;display:grid;grid-template-columns:repeat(4,1fr)}
 .tl .ln{position:absolute;top:60px;left:12.5%;right:12.5%;height:2px;background:var(--a-300)}
 .tn{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px}
@@ -689,22 +711,22 @@ svg .a.gx{transform-origin:0 50%}
   <p class="cv-sub a" style="--d:300ms">Q3 Review · Action Plan · Forecast Q4 —<br>Đề xuất lên Level 5, Middle Business Consultant</p>
   <div class="cv-art"><svg data-render="coverBars" viewBox="0 0 640 640" aria-hidden="true"></svg></div>
   <div class="cv-by a" style="--d:460ms"><b>Phan Mạnh Quang</b><span>Business Consultant · PKD 1.1 Dreamers · 10/2026</span></div>
-  <aside class="notes">Đầu năm em đặt mục tiêu lên L5 vào tháng 10. Hôm nay em xin trình bày kết quả của hành trình đó.</aside>
+  <aside class="notes">Mục tiêu lên Level 5 vào tháng 10 được đặt từ đầu năm. Phần trình bày này tổng kết kết quả của hành trình đó.</aside>
 </section>
 
 <!-- @S2 -->
-<section class="slide s2" data-num="02" data-title="Agenda · 4 câu hỏi">
+<section class="slide s2" data-num="02" data-title="Agenda">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">AGENDA</div>
-      <h2 class="title a" style="--d:80ms">4 câu hỏi em sẽ trả lời hôm nay</h2>
+      <h2 class="title a" style="--d:80ms">Four questions this review answers</h2>
     </header>
     <div class="body">
       <div class="ag-grid" data-stagger="90" data-base="240">
-        <div class="ag a"><span class="ghost">01</span><div class="n">01</div><div class="ic-t"><svg class="i" data-icon="bar-chart"></svg></div><h3>Review Q3</h3><p>Quý vừa rồi em làm được gì?</p></div>
-        <div class="ag a"><span class="ghost">02</span><div class="n">02</div><div class="ic-t"><svg class="i" data-icon="award"></svg></div><h3>Trưởng thành</h3><p>Em đã sẵn sàng cho L5 chưa?</p></div>
-        <div class="ag a"><span class="ghost">03</span><div class="n">03</div><div class="ic-t"><svg class="i" data-icon="target"></svg></div><h3>Action plan</h3><p>Q4 em sẽ làm gì khác?</p></div>
-        <div class="ag a"><span class="ghost">04</span><div class="n">04</div><div class="ic-t"><svg class="i" data-icon="trending-up"></svg></div><h3>Forecast Q4</h3><p>1 tỷ đến từ đâu?</p></div>
+        <div class="ag a"><span class="ghost">01</span><div class="n">01</div><div class="ic-t"><svg class="i" data-icon="bar-chart"></svg></div><h3>Review Q3</h3><p>Kết quả Q3 so với cam kết</p></div>
+        <div class="ag a"><span class="ghost">02</span><div class="n">02</div><div class="ic-t"><svg class="i" data-icon="award"></svg></div><h3>Growth</h3><p>Mức độ sẵn sàng cho Level 5</p></div>
+        <div class="ag a"><span class="ghost">03</span><div class="n">03</div><div class="ic-t"><svg class="i" data-icon="target"></svg></div><h3>Action plan</h3><p>Những thay đổi trong cách làm ở Q4</p></div>
+        <div class="ag a"><span class="ghost">04</span><div class="n">04</div><div class="ic-t"><svg class="i" data-icon="trending-up"></svg></div><h3>Forecast Q4</h3><p>Cơ cấu nguồn của mục tiêu 1B</p></div>
       </div>
       <div class="ag-foot a" style="--d:700ms"><span class="lab">25 phút trình bày · 20 phút trao đổi</span></div>
     </div>
@@ -714,20 +736,20 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S3 -->
-<section class="slide dark chapter wipe" data-num="03" data-title="Chương 01 · Review Q3">
+<section class="slide dark chapter wipe" data-num="03" data-title="Chapter 01 · Q3 Review">
   <div class="cv-grid"></div><div class="cv-glow g1"></div>
   <div class="ch-num a fade" style="--d:300ms">01</div>
-  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">01 · REVIEW Q3</div><h2 class="a" style="--d:330ms">Em đã làm được gì</h2></div>
-  <div class="ch-map a fade" style="--d:500ms"><div class="on">01 · Review Q3</div><div>02 · Trưởng thành</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">01 · REVIEW Q3</div><h2 class="a" style="--d:330ms">What Q3 delivered</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="on">01 · Review Q3</div><div>02 · Growth</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
   <aside class="notes"></aside>
 </section>
 
 <!-- ================================================================ S4 -->
-<section class="slide s4" data-num="04" data-title="Kết quả Q3 so với cam kết">
+<section class="slide s4" data-num="04" data-title="Q3 results vs. commit">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">Q3 đạt 701M, 88% cam kết, tháng 9 về đích vượt kế hoạch</h2>
+      <h2 class="title a" style="--d:80ms">Q3 reached 701M, 88% of commit, with September ahead of plan</h2>
     </header>
     <div class="body">
       <div class="s4-l" data-stagger="90" data-base="240">
@@ -760,15 +782,15 @@ svg .a.gx{transform-origin:0 50%}
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Nói thẳng phần hụt 12% trước, rồi nhấn mạnh tháng 9 đã bắt kịp và vượt kế hoạch.</aside>
+  <aside class="notes">Nêu thẳng phần hụt 12% so với cam kết trước, sau đó nhấn mạnh tháng 9 đã bắt kịp và vượt kế hoạch.</aside>
 </section>
 
 <!-- @S5 -->
-<section class="slide s5" data-num="05" data-title="Bốn quý và nhịp ổn định">
+<section class="slide s5" data-num="05" data-title="Four-quarter trend">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">Doanh thu tăng 2 quý liên tiếp, 5 tháng liền đạt Goal trở lên</h2>
+      <h2 class="title a" style="--d:80ms">Revenue up two quarters in a row, five straight months at Goal or above</h2>
     </header>
     <div class="body">
       <div class="s5-l a fade" style="--d:200ms">
@@ -780,21 +802,21 @@ svg .a.gx{transform-origin:0 50%}
         <div class="s5-cap a" style="--d:1500ms"><span class="ic-t"><svg class="i" data-icon="gauge"></svg></span><span>Trung bình 9 tháng: <b><span data-bind="avg9m"></span>M/tháng</b>, vượt Goal L5 (<span data-bind="l5.goal"></span>M)</span></div>
       </div>
       <div class="s5-r">
-        <div class="ch-t a" style="--d:300ms">Xếp hạng performance hằng tháng (L4)<span>T4–T9/2026</span></div>
+        <div class="ch-t a" style="--d:300ms">Xếp hạng performance hằng tháng (L4)<span>T5–T9/2026</span></div>
         <div class="rts" data-render="ratings"></div>
       </div>
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Đây là câu trả lời cho câu hỏi "có duy trì được phong độ không".</aside>
+  <aside class="notes">Slide trả lời câu hỏi về khả năng duy trì phong độ.</aside>
 </section>
 
 <!-- @S6 -->
-<section class="slide s6" data-num="06" data-title="Doanh thu đến từ đâu">
+<section class="slide s6" data-num="06" data-title="Revenue by source">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">Khách hiện hữu đóng góp 60% doanh thu, nền ổn định cho năng lực new sales</h2>
+      <h2 class="title a" style="--d:80ms">Existing customers drove 60% of revenue, a stable base for new sales</h2>
     </header>
     <div class="body">
       <div class="donuts">
@@ -817,28 +839,28 @@ svg .a.gx{transform-origin:0 50%}
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Chủ động giải thích trước để không bị hiểu là new sales yếu đi.</aside>
+  <aside class="notes">Chủ động giải thích trước để tránh hiểu nhầm rằng năng lực new sales suy giảm.</aside>
 </section>
 
 <!-- @S7 -->
-<section class="slide s7" data-num="07" data-title="Làm tốt và cần cải thiện">
+<section class="slide s7" data-num="07" data-title="Strengths and gaps">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">Thế mạnh đã rõ, điểm nghẽn cũng đã rõ</h2>
+      <h2 class="title a" style="--d:80ms">Clear strengths, clearly identified bottlenecks</h2>
     </header>
     <div class="body">
       <div class="colx c-good" data-stagger="90" data-base="220">
-        <div class="col-h a"><span class="dot"></span><h3>Làm tốt</h3></div>
-        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Đạt ~90% mục tiêu, <b>tháng 9 vượt cam kết</b></p></div>
-        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Doanh thu trung bình ổn định: <b><span data-bind="avg9m"></span>M/tháng</b> trong 9 tháng</p></div>
-        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p><b><span data-bind="q3.dealsWon"></span> deal won</b>, nhịp chốt đều</p></div>
+        <div class="col-h a"><span class="dot"></span><h3>Điểm mạnh</h3></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Đạt ~90% mục tiêu quý, <b>tháng 9 vượt cam kết</b></p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Doanh thu trung bình ổn định: <b><span data-bind="avg9m"></span>M/tháng</b> trong 9 tháng · <b>~<span data-bind="slides.s7.q3AvgPerMonth"></span>M/tháng</b> trong Q3</p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p><b><span data-bind="q3.dealsWon"></span> deal won</b>, nhịp chốt deal ổn định</p></div>
         <div class="it a"><span class="ii"><svg class="i" data-icon="check"></svg></span><p>Khai thác hiệu quả nguồn <b>up/cross và CSM</b></p></div>
       </div>
       <div class="colx c-warn" data-build="1" data-label="Cột Cần cải thiện" data-stagger="110" data-base="0">
         <div class="col-h a"><span class="dot"></span><h3>Cần cải thiện</h3></div>
         <div class="it a"><span class="ii"><svg class="i" data-icon="alert-circle"></svg></span>
-          <div><p><b>New meeting còn thấp</b>, nên new sales còn thấp</p>
+          <div><p><b>Số lượng new meeting chưa đạt mục tiêu</b>, kéo theo doanh thu new sales thấp</p>
             <div class="bul">
               <div class="bul-h"><span class="num"><span data-count="q3.newMeetings" data-dec="0"></span><small> / <span data-bind="q3.newMeetingTarget"></span> new meeting</small></span><span class="pill" style="background:#FDF3D7;color:#8A6300"><span><span data-bind="slides.s7.meetingPct"></span>%</span></span></div>
               <div class="tr"><i class="a gw" data-w-ratio="q3.newMeetings/q3.newMeetingTarget" style="--d:300ms"></i><s></s></div>
@@ -846,7 +868,7 @@ svg .a.gx{transform-origin:0 50%}
             </div>
           </div>
         </div>
-        <div class="it a"><span class="ii"><svg class="i" data-icon="alert-circle"></svg></span><p>Số lượng lead bị thu hồi chưa được kiểm soát tốt, <b>chưa giữ được chuẩn cơ bản</b></p></div>
+        <div class="it a"><span class="ii"><svg class="i" data-icon="alert-circle"></svg></span><p>Số lượng lead bị thu hồi chưa được kiểm soát, <b>chưa đảm bảo chuẩn vận hành cơ bản</b></p></div>
       </div>
     </div>
   </div>
@@ -855,11 +877,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- ================================================================ S8 -->
-<section class="slide s8" data-num="08" data-title="Phễu new sales">
+<section class="slide s8" data-num="08" data-title="New sales funnel">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">107 lead ra 3 deal new: phễu nghẽn ở đầu vào, chất lượng sau meeting giữ vững</h2>
+      <h2 class="title a" style="--d:80ms">107 leads, 3 new deals: the bottleneck is at the top, post-meeting quality holds</h2>
     </header>
     <div class="body">
       <div class="s8-l a fade" style="--d:200ms">
@@ -869,13 +891,13 @@ svg .a.gx{transform-origin:0 50%}
           <div class="callouts">
             <div class="callout a" data-build="1" data-label="Nghẽn ① · Đầu phễu" style="top:40px;--d:250ms">
               <div class="co-h"><span class="co-n">1</span>Đầu phễu (Lead → Meeting)</div>
-              <p>Chất lượng lead đầu vào thấp hơn do qualify chặt hơn (vấn đề chung của RC), cộng thêm lead chưa được chăm sóc đủ nhanh và đủ đều</p>
+              <p>Chất lượng lead đầu vào giảm do tiêu chí qualify chặt hơn (xu hướng chung của RC); tốc độ và tần suất chăm sóc lead chưa đáp ứng yêu cầu</p>
               <div class="acts"><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 1: Back to basic</span><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 3: 15 new meeting/tháng</span></div>
             </div>
             <div class="callout a" data-build="2" data-label="Nghẽn ② · Sau meeting" style="top:322px;--d:250ms">
               <div class="co-h"><span class="co-n">2</span>Sau meeting (Meeting → Won)</div>
-              <p>Cần tăng tỷ lệ chuyển meeting thành deal</p>
-              <div class="acts"><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 4: deck &amp; demo riêng cho từng khách</span></div>
+              <p>Tỷ lệ chuyển đổi từ meeting sang deal cần được cải thiện</p>
+              <div class="acts"><span class="act"><svg class="i" data-icon="arrow-right"></svg>Action 4: deck &amp; demo cá nhân hóa theo từng khách hàng</span></div>
             </div>
           </div>
         </div>
@@ -884,71 +906,63 @@ svg .a.gx{transform-origin:0 50%}
       <div class="panel s8-r a" data-build="3" data-label="So sánh Meeting → Won H1 vs Q3">
         <div class="ch-t">Tỷ lệ Meeting → Won<span>H1/2026 so với Q3/2026</span></div>
         <svg data-render="meetWon" viewBox="0 0 372 500" aria-label="Tỷ lệ Meeting → Won H1 so với Q3"></svg>
-        <p class="cap a" style="--d:900ms">Chất lượng sau meeting giữ vững dù lead đầu vào khó hơn.</p>
+        <p class="cap a" style="--d:900ms">Tỷ lệ chuyển đổi sau meeting được duy trì dù chất lượng lead đầu vào giảm.</p>
       </div>
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Đầu phễu rớt nhiều chủ yếu do lead được qualify chặt hơn, đây là xu hướng chung của RC. Phần em kiểm soát được là tốc độ chăm sóc lead và số meeting. Mỗi chỗ nghẽn có một action tương ứng ở chương 3.</aside>
+  <aside class="notes">Tỷ lệ rơi ở đầu phễu chủ yếu do lead được qualify chặt hơn, đây là xu hướng chung của RC. Phần kiểm soát được là tốc độ chăm sóc lead và số lượng meeting. Mỗi điểm nghẽn có một action tương ứng ở chương 3.</aside>
 </section>
 
 <!-- @S9 -->
-<section class="slide s9" data-num="09" data-title="Deal tiêu biểu Q3">
+<section class="slide s9" data-num="09" data-title="Key deals Q3">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">01 · REVIEW Q3</div>
-      <h2 class="title a" style="--d:80ms">Ba deal, ba cách thắng khác nhau</h2>
+      <h2 class="title a" style="--d:80ms">Three deals, three different ways to win</h2>
     </header>
     <div class="body" data-render="dealCards" data-stagger="110" data-base="240"></div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Cầu nối sang chương 2: những deal này cho thấy em đã thay đổi cách làm việc.</aside>
+  <aside class="notes">Cầu nối sang chương 2: các deal này thể hiện sự thay đổi trong cách làm việc.</aside>
 </section>
 
 <!-- @S10 -->
-<section class="slide dark chapter wipe" data-num="10" data-title="Chương 02 · Trưởng thành">
+<section class="slide dark chapter wipe" data-num="10" data-title="Chapter 02 · Growth">
   <div class="cv-grid"></div><div class="cv-glow g1"></div>
   <div class="ch-num a fade" style="--d:300ms">02</div>
-  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">02 · TRƯỞNG THÀNH</div><h2 class="a" style="--d:330ms">Em đã sẵn sàng cho Level 5</h2></div>
-  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="on">02 · Trưởng thành</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">02 · GROWTH</div><h2 class="a" style="--d:330ms">Ready for Level 5</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="on">02 · Growth</div><div>03 · Action plan</div><div>04 · Forecast Q4</div></div>
   <aside class="notes"></aside>
 </section>
 
 <!-- @S11 -->
-<section class="slide s11" data-num="11" data-title="Em đã thay đổi thế nào">
+<section class="slide s11" data-num="11" data-title="How the approach changed">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
-      <h2 class="title a" style="--d:80ms">Từ người bán hàng thành người tư vấn chốt được deal ở mọi nguồn</h2>
+      <div class="eyebrow a">02 · GROWTH</div>
+      <h2 class="title a" style="--d:80ms">From seller to consultant, closing deals across every source</h2>
     </header>
     <div class="body">
       <div class="panel cg a" style="--d:240ms">
         <div class="lab">01</div>
         <h3>Chốt deal AM &amp; CSM</h3>
         <div class="ba">
-          <div><div class="lab">Trước</div><p>Chủ yếu chốt new sales</p></div>
+          <div><div class="lab">Trước</div><p>Tập trung chủ yếu vào new sales</p></div>
           <div class="arr"><svg class="i" data-icon="arrow-right"></svg></div>
-          <div class="af"><div class="lab">Nay</div><p>Chốt được cả upsell và tái ký</p></div>
+          <div class="af"><div class="lab">Hiện tại</div><p>Chốt cả upsell và tái ký</p></div>
         </div>
-        <div class="stat"><span class="num"><span data-count="slides.s11.existingRev" data-dec="0"></span><small>M</small></span><span>từ khách hiện hữu trong Q3</span></div>
+        <div class="stat"><span class="num"><span data-count="slides.s11.existingRev" data-dec="0"></span><small>M</small></span><span>doanh thu từ khách hàng hiện hữu trong Q3</span></div>
       </div>
       <div class="panel cg a" style="--d:330ms">
         <div class="lab">02</div>
-        <h3>Làm việc khoa học hơn</h3>
+        <h3>Phương pháp làm việc có hệ thống</h3>
         <div class="sci">
-          <div><svg class="i" data-icon="mic"></svg>Recap mọi meeting</div>
+          <div><svg class="i" data-icon="mic"></svg>Recap toàn bộ meeting</div>
           <div><svg class="i" data-icon="refresh-cw"></svg>Review deal định kỳ</div>
-          <div><svg class="i" data-icon="bar-chart"></svg>Ra quyết định dựa trên số liệu CRM</div>
-          <div><svg class="i" data-icon="sparkles"></svg>Ứng dụng AI vào quy trình</div>
+          <div><svg class="i" data-icon="bar-chart"></svg>Ra quyết định dựa trên dữ liệu CRM</div>
+          <div><svg class="i" data-icon="sparkles"></svg>Ứng dụng AI vào quy trình bán hàng</div>
         </div>
-      </div>
-      <div class="case a" style="--d:460ms">
-        <div>
-          <span class="tag dark">Case</span>
-          <h3>Lotte (OOM) → Diamond Plaza</h3>
-          <p>Tư vấn hệ thống KPI cho OOM, từ đó OOM chỉ định Diamond Plaza làm việc với Base (chỉ định thầu, <span data-bind="slides.s11.diamond"></span>M).</p>
-        </div>
-        <svg data-render="caseDiagram" viewBox="0 0 820 190" aria-label="Lotte (OOM) chỉ định Diamond Plaza"></svg>
       </div>
     </div>
   </div>
@@ -957,11 +971,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S12 -->
-<section class="slide s12" data-num="12" data-title="Đối chiếu tiêu chí Level 5">
+<section class="slide s12" data-num="12" data-title="Level 5 criteria check">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
-      <h2 class="title a" style="--d:80ms">Đáp ứng đầy đủ điều kiện thăng cấp chuẩn lên Level 5</h2>
+      <div class="eyebrow a">02 · GROWTH</div>
+      <h2 class="title a" style="--d:80ms">All standard promotion criteria for Level 5 are met</h2>
     </header>
     <div class="body">
       <div class="ct a fade" style="--d:200ms">
@@ -995,11 +1009,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S13 -->
-<section class="slide s13" data-num="13" data-title="Lộ trình & hướng 2027">
+<section class="slide s13" data-num="13" data-title="Roadmap & 2027">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">02 · TRƯỞNG THÀNH</div>
-      <h2 class="title a" style="--d:80ms">Lên L5 đúng kế hoạch đặt ra từ đầu năm và bước tiếp theo</h2>
+      <div class="eyebrow a">02 · GROWTH</div>
+      <h2 class="title a" style="--d:80ms">On track for Level 5 as planned in January, with the next steps defined</h2>
     </header>
     <div class="body">
       <div class="tl">
@@ -1008,7 +1022,7 @@ svg .a.gx{transform-origin:0 50%}
           <div class="dw"><div class="dot a pop" style="--d:300ms"><svg class="i" data-icon="flag"></svg></div></div>
           <div class="when a" style="--d:380ms">T1/2026</div>
           <h3 class="a" style="--d:420ms">Đặt mục tiêu</h3>
-          <p class="a" style="--d:460ms">Đặt mục tiêu lên L5 vào T10 (kế hoạch năm)</p>
+          <p class="a" style="--d:460ms">Mục tiêu lên Level 5 vào T10 trong kế hoạch năm</p>
         </div>
         <div class="tn hi">
           <div class="dw"><div class="dot a pop" style="--d:700ms"><svg class="i" data-icon="award"></svg></div></div>
@@ -1019,17 +1033,19 @@ svg .a.gx{transform-origin:0 50%}
           <div class="dw"><div class="dot a pop" style="--d:1100ms"><svg class="i" data-icon="rocket"></svg></div></div>
           <div class="when a" style="--d:1180ms">Tiếp theo</div>
           <h3 class="a" style="--d:1220ms">Incubator Program</h3>
+          <div class="br">
+            <span class="br-ln a gy" style="--d:1800ms"></span>
+            <div class="dot sm a pop" style="--d:2000ms"><svg class="i" data-icon="globe"></svg></div>
+            <div class="when a" style="--d:2080ms">Mục tiêu mở rộng</div>
+            <h3 class="a" style="--d:2120ms">Thị trường Global</h3>
+            <p class="a" style="--d:2160ms">Tìm kiếm thêm các cơ hội bán hàng từ thị trường Global</p>
+          </div>
         </div>
         <div class="tn">
           <div class="dw"><div class="dot a pop" style="--d:1450ms"><svg class="i" data-icon="users"></svg></div></div>
           <div class="when a" style="--d:1530ms">Sau Incubator</div>
-          <h3 class="a" style="--d:1570ms">Build team riêng</h3>
+          <h3 class="a" style="--d:1570ms">Xây dựng team riêng</h3>
         </div>
-      </div>
-      <div class="mkt a" style="--d:1800ms">
-        <span class="ic-t"><svg class="i" data-icon="globe"></svg></span>
-        <div><h4>Thị trường mới (giai đoạn khám phá)</h4><p>Tiên phong mở thị trường ngoài Việt Nam cho Base (Malaysia, Philippines, Nhật Bản, Jordan…) qua LinkedIn. Rework đã làm, Base chưa có người.</p></div>
-        <span class="tag ghost">Không phải mảng chính · không ảnh hưởng mục tiêu Q4</span>
       </div>
     </div>
   </div>
@@ -1038,28 +1054,28 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S14 -->
-<section class="slide dark chapter wipe" data-num="14" data-title="Chương 03 · Action plan">
+<section class="slide dark chapter wipe" data-num="14" data-title="Chapter 03 · Action Plan">
   <div class="cv-grid"></div><div class="cv-glow g1"></div>
   <div class="ch-num a fade" style="--d:300ms">03</div>
-  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">03 · ACTION PLAN</div><h2 class="a" style="--d:330ms">Q4 em sẽ làm gì khác</h2></div>
-  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Trưởng thành</div><div class="on">03 · Action plan</div><div>04 · Forecast Q4</div></div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">03 · ACTION PLAN</div><h2 class="a" style="--d:330ms">What changes in Q4</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Growth</div><div class="on">03 · Action plan</div><div>04 · Forecast Q4</div></div>
   <aside class="notes"></aside>
 </section>
 
 <!-- @S15 -->
-<section class="slide s15" data-num="15" data-title="Bốn hành động trọng tâm">
+<section class="slide s15" data-num="15" data-title="Four key actions">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">03 · ACTION PLAN</div>
-      <h2 class="title a" style="--d:80ms">4 hành động, mỗi hành động gắn một chỉ số đo được</h2>
+      <h2 class="title a" style="--d:80ms">Four actions, each tied to a measurable metric</h2>
     </header>
     <div class="body">
       <div class="acts4">
         <div class="ac a" style="--d:240ms">
           <div class="top"><span class="n">01</span></div>
-          <h3>Back to basic: không để lead nguội</h3>
+          <h3>Back to basic: duy trì tốc độ chăm sóc lead</h3>
           <ul>
-            <li>Tuân thủ tuyệt đối cơ chế:</li>
+            <li>Tuân thủ đầy đủ quy chuẩn chăm sóc lead:</li>
             <li>Gọi trong <b>4h</b></li>
             <li><b>≥5 call</b> trong 6 ngày</li>
             <li><b>Book meeting</b> trong 15 ngày</li>
@@ -1069,12 +1085,12 @@ svg .a.gx{transform-origin:0 50%}
             <span class="lnk"><i>1</i>Nghẽn ① · Đầu phễu</span>
           </div>
         </div>
-        <div class="ac a" data-build="1" data-label="Card 02 · Tìm lại điểm chạm">
+        <div class="ac a" data-build="1" data-label="Card 02 · Tăng điểm chạm">
           <div class="top"><span class="n">02</span></div>
-          <h3>Tìm lại điểm chạm với khách hàng</h3>
+          <h3>Tăng điểm chạm với khách hàng</h3>
           <ul>
             <li>Email sequence 3 email về <b>hệ thống 2.0 tích hợp AI</b>, chia theo 4 nhóm bài toán: quản lý công việc · nhân sự/chấm công/lương · bán hàng/CRM · văn bản/E-Office</li>
-            <li><b>Chương trình ưu đãi cho trường học</b>: đào lại lead trường học, gọi lại toàn bộ</li>
+            <li><b>Chương trình ưu đãi cho trường học</b>: khai thác lại tệp lead trường học, liên hệ lại toàn bộ</li>
           </ul>
         </div>
         <div class="ac key a" data-build="2" data-label="Card 03 · Tăng tỷ lệ new sales">
@@ -1095,18 +1111,18 @@ svg .a.gx{transform-origin:0 50%}
         </div>
         <div class="ac a" data-build="3" data-label="Card 04 · Ứng dụng AI">
           <div class="top"><span class="n">04</span></div>
-          <h3>Ứng dụng AI vào công việc</h3>
+          <h3>Ứng dụng AI vào quy trình bán hàng</h3>
           <ul>
-            <li>Đang dùng: recap meeting, demo &amp; slide pitching riêng, proposal &amp; báo giá</li>
-            <li>Mở rộng Q4 ở mọi chặng của deal</li>
-            <li>Chi tiết ở slide tiếp theo</li>
+            <li>Đang áp dụng: recap meeting, demo &amp; slide pitching riêng, proposal &amp; báo giá, review pipeline</li>
+            <li>Mở rộng trong Q4 ra toàn bộ các chặng của deal</li>
+            <li>Chi tiết tại slide 16</li>
           </ul>
           <div class="ft">
             <span class="lnk"><i>2</i>Nghẽn ② · Sau meeting</span>
           </div>
         </div>
       </div>
-      <div class="rhythm a" style="--d:600ms"><span class="ic-t"><svg class="i" data-icon="calendar"></svg></span><p><b>Nhịp theo dõi:</b> tự review deal hằng tuần</p></div>
+      <div class="rhythm a" style="--d:600ms"><span class="ic-t"><svg class="i" data-icon="calendar"></svg></span><p><b>Nhịp theo dõi:</b> review deal định kỳ hằng tuần</p></div>
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
@@ -1114,24 +1130,24 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- ================================================================ S16 -->
-<section class="slide s16" data-num="16" data-title="AI trong quy trình bán hàng">
+<section class="slide s16" data-num="16" data-title="AI in the sales process">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">03 · ACTION PLAN</div>
-      <h2 class="title a" style="--d:80ms">AI có mặt ở mọi bước của một deal, giúp em có thêm ~22 giờ mỗi tháng để gặp khách</h2>
+      <h2 class="title a" style="--d:80ms">AI at every stage of the deal frees up ~19 hours a month for client meetings</h2>
       <div class="legend a fade" style="--d:200ms"><span><i class="on"></i>Đang dùng</span><span><i class="q4"></i>Mở rộng Q4</span></div>
     </header>
     <div class="body">
       <div class="s16-top a" style="--d:240ms">
         <div class="save">
           <div class="big"><span class="num" data-count="slides.s16.recapBeforeH" data-dec="0"></span><span class="u">giờ</span><span class="arr">→</span><span class="num" data-count="slides.s16.recapAfterMin" data-dec="0"></span><span class="u">phút</span></div>
-          <div class="lb"><span class="lab">Mỗi meeting recap</span><span class="pill good a pop" style="--d:900ms"><svg class="i" data-icon="arrow-down"></svg><span data-count="slides.s16.recapCutPct" data-dec="0" data-pre="−" data-suf="%"></span></span></div>
+          <div class="lb"><span class="lab">Mỗi meeting recap</span><span class="pill good a pop" style="--d:900ms"><svg class="i" data-icon="arrow-down"></svg><span data-count="slides.s16.recapCutPct" data-dec="1" data-pre="−" data-suf="%"></span></span></div>
         </div>
         <div class="cmp">
           <div class="cmp-r"><span class="lab">Trước</span><div class="tr"><i class="a gx" style="width:100%;background:#C9D2E3;--d:400ms"></i></div><b><span data-bind="slides.s16.recapBeforeH"></span> giờ</b></div>
-          <div class="cmp-r"><span class="lab">Nay</span><div class="tr"><i class="a gx" data-width-after style="background:var(--a-600);--d:550ms"></i></div><b><span data-bind="slides.s16.recapAfterMin"></span> phút</b></div>
+          <div class="cmp-r"><span class="lab">Hiện tại</span><div class="tr"><i class="a gx" data-width-after style="background:var(--a-600);--d:550ms"></i></div><b><span data-bind="slides.s16.recapAfterMin"></span> phút</b></div>
         </div>
-        <p class="s16-cap">~<span data-bind="slides.s16.meetingsPerMonth"></span> meeting/tháng ≈ <b><span data-bind="slides.s16.hoursSaved"></span> giờ tiết kiệm</b>, gần <span data-bind="slides.s16.workDays"></span> ngày làm việc</p>
+        <p class="s16-cap">~<span data-bind="slides.s16.meetingsPerMonth"></span> meeting/tháng ≈ <b>~<span data-bind="slides.s16.hoursSaved"></span> giờ tiết kiệm</b>, hơn <span data-bind="slides.s16.workDays"></span> ngày làm việc</p>
       </div>
 
       <div class="flow">
@@ -1188,10 +1204,10 @@ svg .a.gx{transform-origin:0 50%}
         </div>
       </div>
 
-      <div class="band a" data-build="7" data-label="Dải Review pipeline hằng tuần">
+      <div class="band on a" data-build="7" data-label="Dải Review pipeline hằng tuần">
         <div class="bi"><svg class="i" data-icon="bar-chart"></svg></div>
-        <p><b>Review pipeline hằng tuần:</b> AI đọc dữ liệu export từ CRM, đánh dấu deal đứng yên lâu và lead sắp quá hạn chăm sóc</p>
-        <span class="pill info">Mở rộng Q4</span>
+        <p><b>Review pipeline hằng tuần:</b> AI phân tích dữ liệu export từ CRM, đánh dấu deal tồn đọng lâu và lead sắp quá hạn chăm sóc</p>
+        <span class="pill on">Đang dùng</span>
       </div>
     </div>
   </div>
@@ -1200,24 +1216,24 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S17 -->
-<section class="slide dark chapter wipe" data-num="17" data-title="Chương 04 · Forecast Q4">
+<section class="slide dark chapter wipe" data-num="17" data-title="Chapter 04 · Q4 Forecast">
   <div class="cv-grid"></div><div class="cv-glow g1"></div>
   <div class="ch-num a fade" style="--d:300ms">04</div>
-  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">04 · FORECAST Q4</div><h2 class="a" style="--d:330ms">1 tỷ đến từ đâu</h2></div>
-  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Trưởng thành</div><div class="done">03 · Action plan</div><div class="on">04 · Forecast Q4</div></div>
+  <div class="ch-txt"><div class="eyebrow a" style="--d:250ms">04 · FORECAST Q4</div><h2 class="a" style="--d:330ms">Where the 1B comes from</h2></div>
+  <div class="ch-map a fade" style="--d:500ms"><div class="done">01 · Review Q3</div><div class="done">02 · Growth</div><div class="done">03 · Action plan</div><div class="on">04 · Forecast Q4</div></div>
   <aside class="notes"></aside>
 </section>
 
 <!-- @S18 -->
-<section class="slide s18" data-num="18" data-title="Mục tiêu Q4: 1 tỷ">
+<section class="slide s18" data-num="18" data-title="Q4 target: 1B">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">04 · FORECAST Q4</div>
-      <h2 class="title a" style="--d:80ms">Q4 commit 1 tỷ: vượt goal năm và giữ nhịp Outperformance L5</h2>
+      <h2 class="title a" style="--d:80ms">Q4 commit of 1B: beating the annual goal at an L5 Outperformance pace</h2>
     </header>
     <div class="body">
       <div class="kp3" data-stagger="90" data-base="240">
-        <div class="kx a"><div class="lab">Commit Q4</div><div class="num"><span data-count="q4.commit" data-dec="0"></span><small>M</small></div></div>
+        <div class="kx a"><div class="lab">Commit Q4</div><div class="num"><span data-count="q4.commit" data-div="1000" data-dec="0"></span><small>B</small></div></div>
         <div class="kx a"><div class="lab">Cả năm 2026</div><div class="num"><span data-count="year.withQ4" data-div="1000" data-dec="2"></span><small>B</small></div><span class="pill good"><svg class="i" data-icon="check"></svg><span><span data-bind="year.withQ4Pct"></span>% goal <span data-bind="year.goal" data-div="1000"></span>B</span></span></div>
         <div class="kx a"><div class="lab">Trung bình Q4</div><div class="num"><span data-count="slides.s18.perMonth" data-dec="0"></span><small>M</small><small class="u">/tháng</small></div><span class="pill info"><span>&gt; Outperformance L5 <span data-bind="l5.outperf"></span>M</span></span></div>
       </div>
@@ -1229,21 +1245,21 @@ svg .a.gx{transform-origin:0 50%}
         <svg data-render="q4Stack" viewBox="0 0 1000 520" aria-label="Kế hoạch doanh thu Q4 theo tháng"></svg>
       </div>
       <div class="yr a" data-build="4" data-label="Thanh tiến độ năm">
-        <div class="yr-h"><div class="ch-t">Tiến độ doanh thu năm 2026</div><p class="cap-s">Chỉ cần <b><span data-bind="year.neededQ4"></span>M</b> trong Q4 để đạt goal năm.</p></div>
+        <div class="yr-h"><div class="ch-t">Tiến độ doanh thu năm 2026</div><p class="cap-s">Q4 cần tối thiểu <b><span data-bind="year.neededQ4"></span>M</b> để đạt goal năm.</p></div>
         <svg data-render="yearBar" viewBox="0 0 1728 104" aria-label="Tiến độ doanh thu năm"></svg>
       </div>
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">T10 thấp nhất vì chưa có deal lớn về. New sales ~114M là quay lại nhịp new sales của H1 (~109M/tháng).</aside>
+  <aside class="notes">T10 thấp nhất do chưa có deal lớn ghi nhận. New sales ~114M tương ứng việc quay lại nhịp new sales của H1 (~109M/tháng).</aside>
 </section>
 
 <!-- ================================================================ S19 -->
-<section class="slide s19" data-num="19" data-title="Danh sách deal Q4">
+<section class="slide s19" data-num="19" data-title="Q4 deal list">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">04 · FORECAST Q4</div>
-      <h2 class="title a" style="--d:80ms">1 tỷ = nền + DMS + Pearl River, có Draho dự phòng và LiteOn là upside</h2>
+      <h2 class="title a" style="--d:80ms">1B = Core + DMS + Pearl River, with Draho as backup and LiteOn as upside</h2>
     </header>
     <div class="body">
       <div class="s19-l a fade" style="--d:200ms">
@@ -1252,10 +1268,10 @@ svg .a.gx{transform-origin:0 50%}
       </div>
       <div class="s19-r">
         <div class="panel wpanel a fade" style="--d:260ms">
-          <div class="ch-t">Cộng dồn tới mục tiêu 1.000M<span>Triệu đồng</span></div>
+          <div class="ch-t">Cộng dồn tới mục tiêu 1B<span>Triệu đồng</span></div>
           <svg data-render="waterfall" viewBox="0 0 460 560" aria-label="Waterfall cộng dồn deal Q4"></svg>
         </div>
-        <div class="chip a" style="--d:400ms"><svg class="i" data-icon="users"></svg>Manager và DCEO đã cùng tham gia 2 deal lớn trong danh sách</div>
+        <div class="chip a" style="--d:400ms"><svg class="i" data-icon="users"></svg>Manager và DCEO đã trực tiếp tham gia 2 deal lớn trong danh sách</div>
       </div>
     </div>
   </div>
@@ -1264,61 +1280,61 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @S20 -->
-<section class="slide s20" data-num="20" data-title="Rủi ro & phương án">
+<section class="slide s20" data-num="20" data-title="Risks & mitigation">
   <div class="slide-in">
     <header class="hd">
       <div class="eyebrow a">04 · FORECAST Q4</div>
-      <h2 class="title a" style="--d:80ms">Em đã tính trước các rủi ro lớn nhất</h2>
+      <h2 class="title a" style="--d:80ms">Key risks identified, with mitigation plans in place</h2>
     </header>
     <div class="body" data-stagger="110" data-base="240">
       <div class="rk2 a">
-        <div class="rh"><span class="sev red"><svg class="i" data-icon="alert-triangle"></svg></span><div><h3>DMS: tỷ lệ active chỉ 30–40%.</h3><p class="rd">Luồng văn bản đến thuộc hệ thống Bộ Công Thương, không đấu nối API được.</p></div></div>
+        <div class="rh"><span class="sev red"><svg class="i" data-icon="alert-triangle"></svg></span><div><h3>DMS: tỷ lệ active chỉ 30–40%.</h3><p class="rd">Luồng văn bản đến thuộc hệ thống Bộ Công Thương, không thể đấu nối qua API.</p></div></div>
         <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
           <li>Chuyển trọng tâm giá trị sang <b>giao việc, kế hoạch công việc năm, chấm KPI theo NĐ 355</b> (gói PS 60M)</li>
-          <li>Review sử dụng theo phòng ban trong T10, tìm phòng ban ủng hộ</li>
-          <li>Nếu trượt: <b>Draho thay thế</b></li></ul></div>
+          <li>Đánh giá mức độ sử dụng theo phòng ban trong T10, xác định phòng ban ủng hộ</li>
+          <li>Phương án dự phòng: <b>Draho thay thế</b></li></ul></div>
       </div>
       <div class="rk2 a">
         <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Draho: hợp đồng còn hạn tới T5/2027.</h3></div></div>
         <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
           <li>Lý do ký sớm: <b>chốt ngân sách 2027 ngay trong Q4</b></li>
-          <li>Lên hệ thống 2.0 sớm, cấn trừ thời gian còn lại của hợp đồng cũ</li></ul></div>
+          <li>Chuyển sớm lên hệ thống 2.0, cấn trừ thời hạn còn lại của hợp đồng hiện tại</li></ul></div>
       </div>
       <div class="rk2 a">
-        <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Tháng 10 mỏng (chưa có deal về).</h3></div></div>
+        <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Doanh thu tháng 10 còn mỏng (chưa có deal ghi nhận).</h3></div></div>
         <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
-          <li>Đẩy <b>LPH và deal nhỏ</b> về trong T10</li>
+          <li>Đẩy nhanh <b>LPH và các deal nhỏ</b> để ghi nhận trong T10</li>
           <li>New sales ~114M</li>
           <li>Chương trình ưu đãi trường học</li></ul></div>
       </div>
       <div class="rk2 a">
         <div class="rh"><span class="sev yel"><svg class="i" data-icon="alert-circle"></svg></span><div><h3>Pearl River phụ thuộc thời điểm chốt cuối năm.</h3></div></div>
         <div class="plan"><span class="pa"><svg class="i" data-icon="arrow-right"></svg></span><ul>
-          <li>Bám sát PIC, chuẩn bị sẵn hợp đồng</li>
-          <li><b>LiteOn là upside bù</b></li></ul></div>
+          <li>Theo sát PIC, chuẩn bị sẵn hợp đồng</li>
+          <li><b>LiteOn là upside bù đắp</b></li></ul></div>
       </div>
     </div>
   </div>
   <footer class="foot"><span>BASE.VN — LEVEL-UP DEFENSE</span><span class="pg"></span></footer>
-  <aside class="notes">Nếu bị hỏi "cả DMS và Draho đều trượt thì sao": trả lời bằng nền + Pearl River + upsell/new sales, kèm LiteOn.</aside>
+  <aside class="notes">Nếu được hỏi trường hợp cả DMS và Draho đều trượt: trả lời bằng Core + Pearl River + upsell/new sales, kèm LiteOn.</aside>
 </section>
 
 <!-- @S21 -->
-<section class="slide dark closing" data-num="21" data-title="Kết · Raise the bar">
+<section class="slide dark closing" data-num="21" data-title="Closing">
   <div class="cv-grid"></div><div class="cv-glow g1"></div><div class="cv-glow g2"></div>
   <div class="qt" data-render="quote"></div>
   <div class="qrule a fade" style="--d:1400ms"></div>
-  <div class="qline a fade" style="--d:1500ms">Q4: 1 tỷ · Cả năm: <span data-bind="year.withQ4Pct"></span>% goal · Level 5</div>
-  <div class="cv-by a" style="--d:1800ms"><b>Cảm ơn anh chị</b><span>Phan Mạnh Quang · Business Consultant · Base.vn</span></div>
+  <div class="qline a fade" style="--d:1500ms">Q4: 1B · Cả năm: <span data-bind="year.withQ4Pct"></span>% goal · Level 5</div>
+  <div class="cv-by a" style="--d:1800ms"><b>Thank you</b><span>Phan Mạnh Quang · Business Consultant · Base.vn</span></div>
   <aside class="notes"></aside>
 </section>
 
 <!-- @A1 -->
-<section class="slide apx a1" data-appendix data-num="A1" data-title="Phụ lục A1 · Doanh thu theo tháng">
+<section class="slide apx a1" data-appendix data-num="A1" data-title="Appendix A1 · Monthly revenue">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">PHỤ LỤC · A1</div>
-      <h2 class="title a" style="--d:80ms">Doanh thu theo tháng T1–T9/2026</h2>
+      <div class="eyebrow a">APPENDIX · A1</div>
+      <h2 class="title a" style="--d:80ms">Monthly revenue, January–September 2026</h2>
     </header>
     <div class="body a fade" style="--d:200ms">
       <div class="ch-h">
@@ -1334,11 +1350,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @A2 -->
-<section class="slide apx a2" data-appendix data-num="A2" data-title="Phụ lục A2 · 15 deal won Q3">
+<section class="slide apx a2" data-appendix data-num="A2" data-title="Appendix A2 · Q3 deals won">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">PHỤ LỤC · A2</div>
-      <h2 class="title a" style="--d:80ms">15 deal won Q3</h2>
+      <div class="eyebrow a">APPENDIX · A2</div>
+      <h2 class="title a" style="--d:80ms">15 deals won in Q3</h2>
     </header>
     <div class="body a fade" style="--d:200ms" data-render="dealsQ3"></div>
   </div>
@@ -1347,11 +1363,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @A3 -->
-<section class="slide apx a3" data-appendix data-num="A3" data-title="Phụ lục A3 · Mốc doanh thu L4/L5">
+<section class="slide apx a3" data-appendix data-num="A3" data-title="Appendix A3 · L4/L5 thresholds">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">PHỤ LỤC · A3</div>
-      <h2 class="title a" style="--d:80ms">Mốc doanh thu L4/L5 theo chính sách v5.1</h2>
+      <div class="eyebrow a">APPENDIX · A3</div>
+      <h2 class="title a" style="--d:80ms">L4/L5 revenue thresholds under policy v5.1</h2>
     </header>
     <div class="body">
       <div class="lt a fade" style="--d:200ms" data-render="levels"></div>
@@ -1366,11 +1382,11 @@ svg .a.gx{transform-origin:0 50%}
 </section>
 
 <!-- @A4 -->
-<section class="slide apx a4" data-appendix data-num="A4" data-title="Phụ lục A4 · Pipeline dài hạn">
+<section class="slide apx a4" data-appendix data-num="A4" data-title="Appendix A4 · Long-term pipeline">
   <div class="slide-in">
     <header class="hd">
-      <div class="eyebrow a">PHỤ LỤC · A4</div>
-      <h2 class="title a" style="--d:80ms">Pipeline dài hạn</h2>
+      <div class="eyebrow a">APPENDIX · A4</div>
+      <h2 class="title a" style="--d:80ms">Long-term pipeline</h2>
     </header>
     <div class="body" data-stagger="110" data-base="200">
       <div class="pl a">
@@ -1414,7 +1430,12 @@ function fmt(v, dec=0){
   i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   return (neg ? '−' : '') + i + (d ? ',' + d : '');
 }
-const M = (v, dec=0) => fmt(v, dec) + 'M';
+// Từ 1.000M trở lên hiển thị theo đơn vị B: 1.000M → 1B, 1.584M → 1,58B, 2.300M → 2,3B
+const M = (v, dec=0) => {
+  if (v < 1000) return fmt(v, dec) + 'M';
+  const b = +(v / 1000).toFixed(2);
+  return fmt(b, (String(b).split('.')[1] || '').length) + 'B';
+};
 
 // Icon line kiểu Lucide (24×24, stroke 2)
 const ICONS = {
@@ -1682,21 +1703,8 @@ R.dealCards = el => {
       <div class="v num"><span data-count="slides.s9.deals.${i}.value" data-dec="${d.dec}"></span><small>M</small></div>
       ${d.sub ? `<div class="sub">${d.sub}</div>` : ''}
       ${d.split ? `<div class="split">${d.split.map(([k, v]) => `<div>${k} ~${fmt(v)}M</div>`).join('')}</div>` : ''}
-      <div class="why"><div class="lab">Vì sao thắng</div><p>${d.why}</p>${d.quote ? `<div class="q">“${d.quote}”</div>` : ''}</div>
+      <div class="why"><div class="lab">Yếu tố then chốt</div><p>${d.why}</p>${d.quote ? `<div class="q">“${d.quote}”</div>` : ''}</div>
     </div>`).join('');
-};
-
-// S11 · sơ đồ 2 node OOM → Diamond Plaza
-R.caseDiagram = svg => {
-  svg.innerHTML =
-    `<g class="a fade" style="--d:700ms"><rect x="1" y="20" width="300" height="150" rx="22" fill="#fff" stroke="#DDE2EA" stroke-width="1.5"/>` +
-    `<text x="151" y="88" text-anchor="middle" font-size="28" font-weight="600" fill="${C.ink}" letter-spacing="-.5">Lotte (OOM)</text>` +
-    `<text class="m" x="151" y="122" text-anchor="middle" font-size="14" font-weight="500" fill="${C.muted}">TƯ VẤN HỆ THỐNG KPI</text></g>` +
-    `<path class="a draw" style="--d:1000ms" pathLength="1" d="M312,95 L506,95" stroke="${C.a600}" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)"/>` +
-    `<text class="a fade" style="--d:1200ms" x="409" y="78" text-anchor="middle" font-size="17" font-weight="600" fill="${C.a700}">Chỉ định thầu</text>` +
-    `<g class="a pop" style="--d:1400ms"><rect x="518" y="20" width="300" height="150" rx="22" fill="${C.a600}"/>` +
-    `<text x="668" y="88" text-anchor="middle" font-size="28" font-weight="600" fill="#fff" letter-spacing="-.5">Diamond Plaza</text>` +
-    `<text x="668" y="126" text-anchor="middle" font-size="24" font-weight="500" fill="#fff" fill-opacity=".85">${M(DATA.slides.s11.diamond)}</text></g>`;
 };
 
 // S12 · thanh ngang 690,9M so với vạch 525M
@@ -1831,7 +1839,7 @@ const DECK_TOTAL = 21; // tổng số slide chính của deck đầy đủ
 const deckEl = $('#deck'), slides = $$('.slide', deckEl);
 const LAST_MAIN = slides.findIndex(s => s.hasAttribute('data-appendix')) - 1; // S21
 slides.forEach((s, i) => {
-  const pg = $('.pg', s); if (pg) pg.innerHTML = s.hasAttribute('data-appendix') ? `PHỤ LỤC · <b>${s.dataset.num}</b>` : `<b>${s.dataset.num || String(i+1).padStart(2,'0')}</b> / ${DECK_TOTAL}`;
+  const pg = $('.pg', s); if (pg) pg.innerHTML = s.hasAttribute('data-appendix') ? `APPENDIX · <b>${s.dataset.num}</b>` : `<b>${s.dataset.num || String(i+1).padStart(2,'0')}</b> / ${DECK_TOTAL}`;
   s._groups = new Map(); let max = 0;
   $$('.a, [data-count]', s).forEach(el => {
     const b = el.closest('[data-build]'); const g = b ? +b.dataset.build : 0;
@@ -1881,8 +1889,13 @@ function revealUpTo(s, n, instant){
 
 function go(i, targetStep = 0, dir){
   i = Math.max(0, Math.min(slides.length - 1, i));
-  anims.forEach(a => a.finish()); anims = [];
+  // Kết thúc ngay hiệu ứng chuyển slide còn đang chạy. Không gọi finish() cho hiệu ứng đã xong/đã gỡ:
+  // làm vậy sẽ gắn lại trạng thái "mờ về 0" lên slide cũ và khiến slide đó trắng khi quay lại.
+  anims.forEach(a => { if (a.playState === 'running' || a.playState === 'paused') a.finish(); }); anims = [];
   const from = slides[cur], to = slides[i];
+  // Lớp an toàn: gỡ mọi hiệu ứng chuyển slide còn sót trên các slide không tham gia lần chuyển này
+  slides.forEach(s => { if (s !== from && s !== to) { s.getAnimations().forEach(a => a.cancel()); s.classList.remove('leaving'); } });
+  to.getAnimations().forEach(a => a.cancel());
   if (targetStep === 'end') targetStep = to._steps;
   if (dir == null) dir = i >= cur ? 1 : -1;
   if (from && from !== to) {
