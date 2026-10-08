@@ -1935,7 +1935,7 @@ function update(){
   $('#progress').style.width = (frac * 100) + '%';
   $('#progress').style.background = s.classList.contains('dark') ? 'var(--a-300)' : 'var(--a-600)';
   const h = '#/' + (cur + 1);
-  if (location.hash !== h) history.replaceState(null, '', h);
+  try { if (location.hash !== h) history.replaceState(null, '', h); } catch (e) { /* khung nhúng có thể chặn */ }
   syncNotes(); markOverview();
 }
 
@@ -2094,7 +2094,7 @@ addEventListener('touchend', e => {
 }, {passive:true});
 
 /* ---------- Hash #/n ---------- */
-function fromHash(){ const m = location.hash.match(/^#\/(\d+)/); return m ? +m[1] - 1 : 0; }
+function fromHash(){ const m = location.hash.match(/^#\/?(\d+)/); return m ? +m[1] - 1 : 0; } // nhận cả #/5 và #5
 addEventListener('hashchange', () => { const i = fromHash(); if (i !== cur) go(i, 0); });
 
 window.deck = { go, next, prev, get index(){ return cur; }, get step(){ return step; }, slides };
